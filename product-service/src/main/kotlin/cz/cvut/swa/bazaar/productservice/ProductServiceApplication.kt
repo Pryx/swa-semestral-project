@@ -3,6 +3,7 @@ package cz.cvut.swa.bazaar.productservice
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
+
 @SpringBootApplication
 class ProductServiceApplication
 

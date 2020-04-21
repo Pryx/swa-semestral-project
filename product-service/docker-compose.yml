@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+  product-service:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    container_name: product-service
+    depends_on:
+      - mongo
+    ports:
+      - 8081:8081
+    expose:
+      - 8081
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    hostname: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data_container:/data/db
+
+volumes:
+  mongodb_data_container:

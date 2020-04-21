@@ -16,7 +16,7 @@ class SpringFoxConfig {
     @Bean
     fun api(): Docket = Docket(DocumentationType.SWAGGER_2)
             .select()
-            .apis(RequestHandlerSelectors.any())
+            .apis(RequestHandlerSelectors.basePackage("cz.cvut.swa.bazaar.productservice.controller"))
             .paths(PathSelectors.any())
             .build()
 
