@@ -36,7 +36,8 @@ class ProductController(
     fun getProduct(@PathVariable(name = "id") id: String): Product {
         log.debug("> getProduct - $id")
 
-        val product = productRepository.findById(id).orElseThrow()
+        val product = productRepository.findById(id)
+                .orElseThrow { NoSuchElementException("Failed to find product") }
 
         log.debug("< getProduct - $product")
         return product

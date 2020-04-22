@@ -5,12 +5,16 @@ services:
       dockerfile: Dockerfile
       context: .
     container_name: product-service
+    restart: on-failure
     depends_on:
       - mongo
     ports:
       - 8081:8081
     expose:
       - 8081
+    environment:
+      - "MONGODB_URI=mongodb://root:password@mongo:27017"
+      - "SPRING_PROFILES_ACTIVE=docker"
 
   mongo:
     image: mongo:latest

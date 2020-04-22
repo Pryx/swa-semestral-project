@@ -24,7 +24,8 @@ class ReviewController(
     fun reviewProduct(@PathVariable(name = "productId") productId: String, @RequestBody reviewDTO: ReviewDTO): Review {
         log.debug("> reviewProduct - $productId")
 
-        val product = productRepository.findById(productId).orElseThrow()
+        val product = productRepository.findById(productId)
+                .orElseThrow { NoSuchElementException("Failed to find product") }
 
         log.debug("Creating review...")
 
