@@ -1,9 +1,9 @@
 package cz.cvut.swa.bazaar.productservice.controller
 
-import ReviewDTO
 import com.fasterxml.jackson.databind.ObjectMapper
 import cz.cvut.swa.bazaar.productservice.data.ProductRepository
 import cz.cvut.swa.bazaar.productservice.data.Review
+import cz.cvut.swa.bazaar.productservice.data.ReviewDTO
 import cz.cvut.swa.bazaar.productservice.data.ReviewRepository
 import cz.cvut.swa.bazaar.productservice.logger
 import org.springframework.http.HttpStatus

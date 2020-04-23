@@ -1,9 +1,10 @@
 package cz.cvut.swa.bazaar.productservice.controller
 
-import ProductDTO
 import com.fasterxml.jackson.databind.ObjectMapper
 import cz.cvut.swa.bazaar.productservice.data.Product
+import cz.cvut.swa.bazaar.productservice.data.ProductDTO
 import cz.cvut.swa.bazaar.productservice.data.ProductRepository
+import cz.cvut.swa.bazaar.productservice.data.ProductStatusUpdateDTO
 import cz.cvut.swa.bazaar.productservice.logger
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -62,6 +63,21 @@ class ProductController(
         val updatedProduct = productRepository.save(product)
 
         log.debug("< updateProduct - $updatedProduct")
+        return updatedProduct
+    }
+
+    @PostMapping("/update/status")
+    @ResponseStatus(HttpStatus.OK)
+    fun updateProductStatus(@RequestBody statusUpdate: ProductStatusUpdateDTO): Product {
+        log.debug("> updateProductStatus - $statusUpdate")
+
+        val product = productRepository.findById(statusUpdate.id)
+                .orElseThrow { NoSuchElementException("Failed to find product") }
+
+        product.status = statusUpdate.newStatus
+        val updatedProduct = productRepository.save(product)
+
+        log.debug("< updateProductStatus - $updatedProduct")
         return updatedProduct
     }
 
