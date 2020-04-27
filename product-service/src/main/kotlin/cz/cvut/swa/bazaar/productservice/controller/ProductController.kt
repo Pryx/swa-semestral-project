@@ -1,11 +1,9 @@
 package cz.cvut.swa.bazaar.productservice.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import cz.cvut.swa.bazaar.productservice.data.Product
-import cz.cvut.swa.bazaar.productservice.data.ProductDTO
-import cz.cvut.swa.bazaar.productservice.data.ProductRepository
-import cz.cvut.swa.bazaar.productservice.data.ProductStatusUpdateDTO
+import cz.cvut.swa.bazaar.productservice.data.*
 import cz.cvut.swa.bazaar.productservice.logger
+import cz.cvut.swa.bazaar.productservice.service.ProductService
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
@@ -14,7 +12,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("product")
 class ProductController(
         val objectMapper: ObjectMapper,
-        val productRepository: ProductRepository
+        val productRepository: ProductRepository,
+        val productService: ProductService
 ) {
 
     val log by logger()
@@ -34,14 +33,13 @@ class ProductController(
 
     @GetMapping("/{id}", produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseStatus(HttpStatus.OK)
-    fun getProduct(@PathVariable(name = "id") id: String): Product {
+    fun getProduct(@PathVariable(name = "id") id: String): ProductWithReviewsDTO {
         log.debug("> getProduct - $id")
 
-        val product = productRepository.findById(id)
-                .orElseThrow { NoSuchElementException("Failed to find product") }
+        val productWithReviewsDTO = productService.getProductWithReviews(id)
 
-        log.debug("< getProduct - $product")
-        return product
+        log.debug("< getProduct - $productWithReviewsDTO")
+        return productWithReviewsDTO
     }
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
