@@ -11,6 +11,7 @@ data class Product(
         val title: String,
         val description: String,
         val price: BigDecimal,
+        val sellerId: String,
         var status: ProductStatus = ProductStatus.AVAILABLE,
         val postedDatetime: LocalDateTime = LocalDateTime.now()
 

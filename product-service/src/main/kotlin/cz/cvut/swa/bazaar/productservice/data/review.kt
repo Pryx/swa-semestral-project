@@ -8,7 +8,7 @@ data class Review(
 
         @Id val id: String,
         var productId: String,
-        val reviewer: String,
+        val reviewerId: String,
         val text: String,
         val rating: Float? = null,
         val reviewedDatetime: LocalDateTime = LocalDateTime.now()

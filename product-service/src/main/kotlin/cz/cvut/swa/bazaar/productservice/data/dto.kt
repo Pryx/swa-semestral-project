@@ -6,13 +6,14 @@ data class ProductDTO(
 
         val title: String,
         val description: String,
-        val price: BigDecimal
+        val price: BigDecimal,
+        val sellerId: String
 
 )
 
 data class ReviewDTO(
 
-        val reviewer: String,
+        val reviewerId: String,
         val comment: String,
         val rating: Float
 
