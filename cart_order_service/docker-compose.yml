@@ -1,0 +1,43 @@
+# docker-compose.yml
+version: '3.7'
+
+services:
+  order:
+    restart: always # ensures the container will restart on crash
+    container_name: "order-service"
+    build: order/
+    ports:
+      - 8088:8080 # exposing this port on the docker network only, not host
+    links:
+      - datastore
+    depends_on:
+      - datastore
+    networks:
+      - db-tier
+    environment:
+      SERVER_PORT: 8080
+      DB_HOST: "mongodb://root:rootpassword@datastore:27017"
+      DB_NAME: orders
+
+  datastore:
+    image: mongo:latest
+    container_name: "datastore"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    volumes:
+      - mongodb_data_container:/data/db # ensures data persistence between restarting
+    networks:
+      - db-tier
+    hostname: mongo
+    ports:
+      - 27017:27017
+
+    command: mongod --logpath=/dev/null
+
+networks:
+  consignment-tier:
+    name: db-tier
+
+volumes:
+  mongodb_data_container:
