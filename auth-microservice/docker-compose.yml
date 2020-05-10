@@ -1,0 +1,61 @@
+version: "3"
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.18.1
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - "-config.file=/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:6.7.3
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=pass
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    volumes:
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    ports:
+      - "9000:9000"
+      - "3000:3000"
+
+  db:
+    image: "postgres:12"
+    ports:
+      - "5432:5432"
+    environment:
+      # - POSTGRES_PASSWORD=postgres
+      #PGDATA: /var/lib/postgresql/data/pgdata
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    ports:
+      - "8512:8512"
+    volumes:
+      - ./:/usr/src/app
+    links:
+      - db
+    # diesel infer_schema macro gives warnings with this flag.
+    environment:
+      - AUTH_MICRO_DATABASE_URL=postgres://postgres@db:5432/postgres
+      - AUTH_MICRO_PORT=8512
+    command: bash -c "bash ./wait-for-it.sh db:5432 -q && diesel setup --database-url=$${AUTH_MICRO_DATABASE_URL} && diesel migration run --database-url=$${AUTH_MICRO_DATABASE_URL} && cargo run"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sS http://0.0.0.0:8512 || exit 1"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+
+# cargo will try to redownload packages @ docker-compose up so store them here.
+volumes:
+  pgdata: {}

@@ -1,0 +1,2 @@
+PORT = "8080"
+DATABASE_URL = "postgresql://authmicro@localhost:5432/authmicro"

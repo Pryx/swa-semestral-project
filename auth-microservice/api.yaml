@@ -1,0 +1,216 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Auth microservice
+paths:
+  /users/{userId}:
+    get:
+      summary: Request info for a specific user
+      operationId: showUserById
+      tags:
+        - users
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The id of the user to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Info about requested user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        '404':
+          description: User not found    
+          content:
+            text/plain:
+              schema:
+                 type: string
+                 description: Error message
+                 example: Couldn't find user with id 45
+        '500':
+          description: Unexpected error
+          content:
+            text/plain:
+              schema:
+                 type: string
+                 description: Error message
+                 example: Error while connecting to database
+  /register:
+    post:
+      summary: Register user
+      operationId: registerUser
+      tags:
+        - users
+      requestBody:
+       content:
+         application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        '200':
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        '500':
+          description: Unexpected error
+          content:
+            text/plain:
+              schema:
+                 type: string
+                 description: Error message
+                 example: Error while connecting to database
+
+  /update:
+    post:
+      summary: Update user info
+      operationId: updateUser
+      tags:
+        - users
+      requestBody:
+       content:
+         application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        '200':
+          description: Info successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        '404':
+          description: User not found    
+          content:
+            text/plain:
+              schema:
+                 type: string
+                 description: Error message
+                 example: Couldn't find user with email example@example.com
+        '500':
+          description: Unexpected error
+          content:
+            text/plain:
+              schema:
+                 type: string
+                 description: Error message
+                 example: Error while connecting to database
+                 
+              
+  /login:
+      post:
+        summary: Login the user
+        operationId: login
+        tags:
+          - users
+        parameters:
+          - name: userId
+            in: post
+            required: true
+            description: The id of the user to retrieve
+            schema:
+              type: string
+        responses:
+          '200':
+            description: Login token
+            content:
+              text/plain:
+                schema:
+                   type: string
+                   description: Token
+                   example: 754d96b6b1efb6b3bf9eddabd61ce480b33e6c4ca8a6db940ce03c480b90af44
+            
+          '403':
+            description: Incorrect credentials entered
+            content:
+              text/plain:
+                schema:
+                   type: string
+                   description: Error message
+                   example: Bad credentials entered!
+          '500':
+            description: Unexpected error
+            content:
+              text/plain:
+                schema:
+                   type: string
+                   description: Error message
+                   example: Error while connecting to database
+            
+  /logout:
+      post:
+        summary: Logout the user identified by token
+        operationId: logout
+        tags:
+          - users
+        parameters:
+          - name: token
+            in: post
+            required: true
+            description: The token to delete
+            schema:
+              type: string
+
+        responses:
+          '200':
+            description: Successfully logged out
+            content:
+              text/plain:
+                schema:
+                   type: string
+                   description: Success message
+                   example: OK
+
+          '500':
+            description: Unexpected error
+            content:
+              text/plain:
+                schema:
+                   type: string
+                   description: Error message
+                   example: Error while connecting to database
+                
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstname:
+          type: string
+        lastname:
+          type: string
+        email:
+          type: string
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    RegisterRequest:
+      type: object
+      required:
+        - firstname
+        - lastname
+        - email
+        - password
+      properties:
+        firstname:
+          type: string
+        lastname:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
