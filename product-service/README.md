@@ -12,3 +12,7 @@ docker-compose up --build
 ## View Swagger
 
 > http://localhost:8081/swagger-ui.html#
+
+## Actuators
+
+> http://localhost:8081/actuator
