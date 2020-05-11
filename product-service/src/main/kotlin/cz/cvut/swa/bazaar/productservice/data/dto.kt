@@ -29,7 +29,7 @@ data class ProductWithReviewsDTO (
         var status: ProductStatus,
         val postedDatetime: LocalDateTime,
 
-        var reviews: List<ReviewDTO>
+        var reviews: List<ReviewDTO> = emptyList()
 
 )
 

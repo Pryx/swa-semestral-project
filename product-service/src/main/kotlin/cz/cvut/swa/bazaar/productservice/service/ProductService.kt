@@ -1,6 +1,7 @@
 package cz.cvut.swa.bazaar.productservice.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import cz.cvut.swa.bazaar.productservice.data.EntityNotFoundException
 import cz.cvut.swa.bazaar.productservice.data.NetworkException
 import cz.cvut.swa.bazaar.productservice.data.ProductRepository
 import cz.cvut.swa.bazaar.productservice.data.ProductWithReviewsDTO
@@ -20,7 +21,7 @@ class ProductService(
         log.debug("> getProductWithReviews - $productId")
 
         val product = productRepository.findById(productId)
-                .orElseThrow { NoSuchElementException("Failed to find product") }
+                .orElseThrow { EntityNotFoundException("Failed to find product") }
 
         val productWithReviewsDTO = objectMapper.convertValue(product, ProductWithReviewsDTO::class.java)
         val reviews = reviewService.fetchProductReviews(productId)

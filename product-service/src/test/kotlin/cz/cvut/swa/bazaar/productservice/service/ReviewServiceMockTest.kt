@@ -1,26 +1,22 @@
 package cz.cvut.swa.bazaar.productservice.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import cz.cvut.swa.bazaar.productservice.BaseTest
 import cz.cvut.swa.bazaar.productservice.data.ReviewDTO
 import org.junit.AfterClass
 import org.junit.Assert
 import org.junit.BeforeClass
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockserver.integration.ClientAndServer
 import org.mockserver.integration.ClientAndServer.startClientAndServer
 import org.mockserver.model.Header
 import org.mockserver.model.HttpRequest.request
 import org.mockserver.model.HttpResponse.response
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit4.SpringRunner
 import java.time.LocalDateTime
 import java.util.*
 
-@SpringBootTest
-@RunWith(SpringRunner::class)
-class ReviewServiceMockTest {
+class ReviewServiceMockTest : BaseTest() {
 
     @Autowired
     private lateinit var reviewService: ReviewService

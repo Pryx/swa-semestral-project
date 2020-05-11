@@ -70,7 +70,7 @@ class ProductController(
         log.debug("> updateProductStatus - $statusUpdate")
 
         val product = productRepository.findById(statusUpdate.id)
-                .orElseThrow { NoSuchElementException("Failed to find product") }
+                .orElseThrow { EntityNotFoundException("Failed to find product") }
 
         product.status = statusUpdate.newStatus
         val updatedProduct = productRepository.save(product)
