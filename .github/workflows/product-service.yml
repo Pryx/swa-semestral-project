@@ -37,12 +37,3 @@ jobs:
         run: mvn -B clean package -DskipTests
       - name: Maven Test
         run: mvn -B clean test
-
-  docker:
-      runs-on: ubuntu-latest
-      needs: [test]
-
-      steps:
-        - uses: actions/checkout@v2
-        - name: Build Docker image
-          run: docker-compose build
