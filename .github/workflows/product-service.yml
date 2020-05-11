@@ -5,6 +5,10 @@ name: Java CI with Maven
 
 on: [push, pull_request]
 
+defaults:
+      run:
+        working-directory: product-service
+
 jobs:
   build:
 
@@ -18,7 +22,6 @@ jobs:
         java-version: 11
     - name: Build with Maven
       run: mvn -B package --file pom.xml
-      working-directory: product-service
 
 
   test:
@@ -34,7 +37,6 @@ jobs:
         run: mvn -B clean package -DskipTests
       - name: Maven Test
         run: mvn -B clean test
-        working-directory: product-service
 
   docker:
       runs-on: ubuntu-latest
