@@ -14,15 +14,15 @@ Diagram sources are all stored in this directory and can be edited in [app.diagr
 
 ## Level 1: System Context
 
-![](diagrams_png/diagrams_png/System-Context-Diagram.png)
+![](https://github.com/Pryx/swa-semestral-project/blob/master/architecture/diagrams_png/System-Context-Diagram.png?raw=true)
 
 ## Level 2: Containers
 
-![](diagrams_png/diagrams_png/Container-Diagram.png)
+![](https://github.com/Pryx/swa-semestral-project/blob/master/architecture/diagrams_png/Container-Diagram.png?raw=true)
 
 ## Level 3: Components
 
-![](diagrams_png/diagrams_png/Product-Component-Diagram.png)
+![](https://github.com/Pryx/swa-semestral-project/blob/master/architecture/diagrams_png/Product-Component-Diagram.png?raw=true)
 
 ## Level 4: Classes
 
