@@ -24,8 +24,11 @@ I personally recommend to install C4 plugin for App Diagrams. [Plugin](https://g
 
 ## Level 3: Components
 
+### Product microservice
+
 ![](https://github.com/Pryx/swa-semestral-project/blob/master/architecture/diagrams_png/Product-Component-Diagram.png?raw=true)
 
+### Auth microservice
 ![](https://github.com/Pryx/swa-semestral-project/blob/master/architecture/diagrams_png/Auth-Component-Diagram.png?raw=true)
 
 
