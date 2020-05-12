@@ -376,7 +376,7 @@ pub fn update(
                                 success: false,
                                 message: format!("User not found."),
                                 data: None,
-                                code: 404
+                                code: 400
                             }
                         )
                     }

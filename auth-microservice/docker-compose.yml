@@ -2,16 +2,16 @@ version: "3"
 
 services:
   prometheus:
-    image: prom/prometheus:v2.18.1
+    image: prom/prometheus:latest
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - "-config.file=/etc/prometheus/prometheus.yml"
     ports:
-      - "9090:9090"
+      - "6512:9090"
 
   grafana:
-    image: grafana/grafana:6.7.3
+    image: grafana/grafana:latest
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=pass
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
@@ -20,17 +20,31 @@ services:
     volumes:
       - ./grafana/provisioning/:/etc/grafana/provisioning/
     ports:
-      - "9000:9000"
-      - "3000:3000"
+      - "9512:9000"
+      - "3512:3000"
 
   db:
-    image: "postgres:12"
+    image: "postgres:latest"
     ports:
-      - "5432:5432"
+      - "5512:5432"
     environment:
       # - POSTGRES_PASSWORD=postgres
       #PGDATA: /var/lib/postgresql/data/pgdata
       - POSTGRES_HOST_AUTH_METHOD=trust
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  apidoc:
+    image: "redocly/redoc:latest"
+    ports:
+      - "7512:80"
+    volumes:
+      - ./api.yaml:/usr/share/nginx/html/api.yaml
+    environment:
+      - SPEC_URL=api.yaml
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -47,9 +61,9 @@ services:
       - db
     # diesel infer_schema macro gives warnings with this flag.
     environment:
-      - AUTH_MICRO_DATABASE_URL=postgres://postgres@db:5432/postgres
+      - AUTH_MICRO_DATABASE_URL=postgres://postgres@db:5512/postgres
       - AUTH_MICRO_PORT=8512
-    command: bash -c "bash ./wait-for-it.sh db:5432 -q && diesel setup --database-url=$${AUTH_MICRO_DATABASE_URL} && diesel migration run --database-url=$${AUTH_MICRO_DATABASE_URL} && cargo run"
+    command: bash -c "bash ./wait-for-it.sh db:5512 -q && diesel setup --database-url=$${AUTH_MICRO_DATABASE_URL} && diesel migration run --database-url=$${AUTH_MICRO_DATABASE_URL} && cargo run"
     healthcheck:
       test: ["CMD-SHELL", "curl -sS http://0.0.0.0:8512 || exit 1"]
       interval: 1m30s

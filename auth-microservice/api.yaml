@@ -8,7 +8,7 @@ paths:
       summary: Request info for a specific user
       operationId: showUserById
       tags:
-        - users
+        - User info
       parameters:
         - name: userId
           in: path
@@ -22,29 +22,33 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/Response<User>"
         '404':
           description: User not found    
           content:
-            text/plain:
+            application/json:
               schema:
-                 type: string
-                 description: Error message
-                 example: Couldn't find user with id 45
+                $ref: "#/components/schemas/Response<User>"
+              example:
+                message: "User not found!"
+                success: false
+                data: ""
         '500':
           description: Unexpected error
           content:
-            text/plain:
+            application/json:
               schema:
-                 type: string
-                 description: Error message
-                 example: Error while connecting to database
-  /register:
+                $ref: "#/components/schemas/Response<User>"
+              example:
+                message: "Internal server error!"
+                success: false
+                data: ""
+  /register/:
     post:
       summary: Register user
       operationId: registerUser
       tags:
-        - users
+        - User modification
       requestBody:
        content:
          application/json:
@@ -56,124 +60,238 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-        '500':
-          description: Unexpected error
-          content:
-            text/plain:
-              schema:
-                 type: string
-                 description: Error message
-                 example: Error while connecting to database
-
-  /update:
-    post:
-      summary: Update user info
-      operationId: updateUser
-      tags:
-        - users
-      requestBody:
-       content:
-         application/json:
-            schema:
-              $ref: "#/components/schemas/RegisterRequest"
-      responses:
-        '200':
-          description: Info successfully updated
+                $ref: "#/components/schemas/Response<User>"
+              example:
+                success: true
+                message: "Successfully registered user"
+                data: 
+                  id: 521
+                  firstname: "Franta"
+                  lastname: "Novák"
+                  email: "user@example.com"
+                
+        '400':
+          description: Invalid request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-        '404':
-          description: User not found    
-          content:
-            text/plain:
-              schema:
-                 type: string
-                 description: Error message
-                 example: Couldn't find user with email example@example.com
+                $ref: "#/components/schemas/Response<User>"
+              example:
+                message: "User already exists!"
+                success: false
+                data: ""
         '500':
           description: Unexpected error
           content:
-            text/plain:
+            application/json:
               schema:
-                 type: string
-                 description: Error message
-                 example: Error while connecting to database
-                 
-              
-  /login:
+                $ref: "#/components/schemas/Response<User>"
+              example:
+                message: "Internal server error!"
+                success: false
+                data: ""
+
+
+  /login/:
       post:
         summary: Login the user
         operationId: login
         tags:
-          - users
-        parameters:
-          - name: userId
-            in: post
-            required: true
-            description: The id of the user to retrieve
-            schema:
-              type: string
+          - Auth
+        requestBody:
+         content:
+           application/json:
+              schema:
+                $ref: "#/components/schemas/LoginRequest"
         responses:
           '200':
-            description: Login token
+            description: Successfully logged in
             content:
-              text/plain:
+              application/json:
                 schema:
-                   type: string
-                   description: Token
-                   example: 754d96b6b1efb6b3bf9eddabd61ce480b33e6c4ca8a6db940ce03c480b90af44
+                  $ref: "#/components/schemas/Response<String>"
+                example:
+                  message: "Successfully logged in!"
+                  success: false
+                  data: '754d96b6b1efb6b3bf9eddabd61ce480b33e6c4ca8a6db940ce03c480b90af44'
+                
+          '400':
+            description: Invalid request
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Response<String>"
+                example:
+                  message: "User not found!"
+                  success: false
+                  data: false
             
-          '403':
-            description: Incorrect credentials entered
+          '401':
+            description: Wrong credentials
             content:
-              text/plain:
+              application/json:
                 schema:
-                   type: string
-                   description: Error message
-                   example: Bad credentials entered!
+                  $ref: "#/components/schemas/Response<String>"
+                example:
+                  message: "Wrong credentials!"
+                  success: false
+                  data: ""
+            
           '500':
             description: Unexpected error
             content:
-              text/plain:
+              application/json:
                 schema:
-                   type: string
-                   description: Error message
-                   example: Error while connecting to database
+                  $ref: "#/components/schemas/Response<String>"
+                example:
+                  message: "Internal server error!"
+                  success: false
+                  data: ""
+                
+  /logged_in/:
+    post:
+      summary: Is token valid?
+      operationId: registerUser
+      tags:
+        - Auth
+      requestBody:
+       content:
+         application/json:
+            schema:
+              $ref: "#/components/schemas/TokenInfo"
+      responses:
+        '200':
+          description: Token is valid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response<Bool>"
+        '401':
+          description: Token is invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response<Bool>"
+              example:
+                message: "Unauthorized!"
+                success: false
+                data: ""
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response<Bool>"
+              example:
+                message: "User not found!"
+                success: false
+                data: false
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response<Bool>"
+              example:
+                message: "Internal server error!"
+                success: false
+                data: ""
+
+  /update/:
+    post:
+      summary: Update user info
+      operationId: updateUser
+      tags:
+        - User modification
+      requestBody:
+       content:
+         application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRequest"
+      responses:
+          '200':
+            description: Successfully updated user
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Response<User>"
+                
+          '400':
+            description: Invalid request
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Response<User>"
+                example:
+                  message: "User not found!"
+                  success: false
+                  data: false
             
-  /logout:
+          '401':
+            description: Wrong credentials
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Response<User>"
+                example:
+                  message: "Wrong credentials!"
+                  success: false
+                  data: ""
+            
+          '500':
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Response<User>"
+                example:
+                  message: "Internal server error!"
+                  success: false
+                  data: ""
+
+  /logout/:
       post:
         summary: Logout the user identified by token
         operationId: logout
         tags:
-          - users
-        parameters:
-          - name: token
-            in: post
-            required: true
-            description: The token to delete
-            schema:
-              type: string
-
+          - Auth
+        requestBody:
+         content:
+           application/json:
+              schema:
+                $ref: "#/components/schemas/TokenInfo"
         responses:
           '200':
             description: Successfully logged out
             content:
-              text/plain:
+              application/json:
                 schema:
-                   type: string
-                   description: Success message
-                   example: OK
+                  $ref: "#/components/schemas/Response<Bool>"
+                example:
+                  message: "OK"
+                  success: true
+                  data: true
 
+          '400':
+            description: Invalid request
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Response<Bool>"
+                example:
+                  message: "Token not found!"
+                  success: true
+                  data: false
           '500':
             description: Unexpected error
             content:
-              text/plain:
+              application/json:
                 schema:
-                   type: string
-                   description: Error message
-                   example: Error while connecting to database
+                  $ref: "#/components/schemas/Response<Bool>"
+                example:
+                  message: "Internal server error!"
+                  success: false
+                  data: ""
                 
 components:
   schemas:
@@ -182,12 +300,21 @@ components:
       properties:
         id:
           type: integer
+          description: "User ID"
+          example: 521
         firstname:
           type: string
+          description: "User first name"
+          example: "Franta"
         lastname:
           type: string
+          description: "User last name"
+          example: "Novák"
         email:
+          description: "User email"
+          example: "user@example.com"
           type: string
+          
     LoginRequest:
       type: object
       required:
@@ -195,9 +322,29 @@ components:
         - password
       properties:
         email:
+          description: "User email"
+          example: "user@example.com"
           type: string
         password:
+          description: "The password"
+          example: "12345"
           type: string
+          
+    TokenInfo:
+      type: object
+      required:
+        - email
+        - token
+      properties:
+        email:
+          description: "User email"
+          example: "user@example.com"
+          type: string
+        token:
+          type: string
+          description: "User token"
+          example: "754d96b6b1efb6b3bf9eddabd61ce480b33e6c4ca8a6db940ce03c480b90af44"
+          
     RegisterRequest:
       type: object
       required:
@@ -208,9 +355,92 @@ components:
       properties:
         firstname:
           type: string
+          description: "User first name"
+          example: "Franta"
         lastname:
           type: string
+          description: "User last name"
+          example: "Novák"
         email:
+          description: "User email"
+          example: "user@example.com"
           type: string
         password:
+          description: "The password"
+          example: "12345"
           type: string
+          
+    Response<User>:
+      type: object
+      required:
+        - message
+        - success
+      properties:
+        message:
+          description: "Message from server"
+          type: string
+          example: "User found!"
+        success:
+          description: "Whether request was successfull"
+          type: boolean
+          example: true
+        data:
+          description: "Retreived user"
+          $ref: "#/components/schemas/User"
+
+    Response<String>:
+      type: object
+      required:
+        - message
+        - success
+      properties:
+        message:
+          description: "Message from server"
+          type: string
+        success:
+          description: "Whether request was successfull"
+          type: boolean
+          example: true
+        data:
+          description: "Retreived data"
+          example: "754d96b6b1efb6b3bf9eddabd61ce480b33e6c4ca8a6db940ce03c480b90af44"
+          type: string
+
+    Response<Bool>:
+      type: object
+      required:
+        - message
+        - success
+      properties:
+        message:
+          description: "Message from server"
+          type: string
+          example: "User is logged in"
+        success:
+          description: "Whether request was successfull"
+          type: boolean
+          example: true
+        data:
+          description: "Retreived data"
+          type: boolean
+          example: true
+          
+    UpdateRequest:
+      type: object
+      required:
+        - email
+        - token
+        - user_data
+      properties:
+        message:
+          description: "Email"
+          type: string
+          example: "test@example.com"
+        token:
+          description: "Token"
+          type: string
+          example: "754d96b6b1efb6b3bf9eddabd61ce480b33e6c4ca8a6db940ce03c480b90af44"
+        user_data:
+          description: "User data"
+          $ref: "#/components/schemas/RegisterRequest"
+
