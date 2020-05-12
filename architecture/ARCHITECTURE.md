@@ -9,6 +9,8 @@ Architecture diagrams were created based on [C4-Model](https://c4model.com/).
 
 Diagram sources are all stored in this directory and can be edited in [app.diagrams.net](https://app.diagrams.net).
 
+I personally recommend to install C4 plugin for App Diagrams. [Plugin](https://github.com/tobiashochguertel/c4-draw.io)
+
 
 # Diagrams
 
