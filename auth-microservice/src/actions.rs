@@ -1,11 +1,10 @@
 use crate::model;
 extern crate diesel;
-use diesel::prelude::*;
-use diesel::pg::PgConnection;
 use crypto::digest::Digest;
 use crypto::sha2::Sha256;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
+use crate::users;
 
 //use diesel::dsl::count_star;
 
@@ -13,14 +12,15 @@ use std::time::UNIX_EPOCH;
 /// Run query using Diesel to insert a new database row and return the result.
 pub fn find_user_by_uid(
     uid: i32,
-    conn: &PgConnection,
+    user_service: &dyn users::UserServiceTrait,
 ) -> Result<model::Response<model::User>, diesel::result::Error> {
-    use crate::schema::users::dsl::*;
+    let user = user_service.get_user_by_uid(uid);
 
-    let user = users.
-        filter(id.eq(uid))
-        .first::<model::User>(conn)
-        .optional()?;
+    if let Err(e) = user{
+        return Err(e);
+    }
+
+    let user = user.unwrap();
 
     match user {
         Some(u) => return Ok(
@@ -41,29 +41,12 @@ pub fn find_user_by_uid(
     }
 }
 
-
-pub fn find_user_by_email(
-    usr_email: String,
-    conn: &PgConnection,
-) -> Result<Option<model::User>, diesel::result::Error> {
-    use crate::schema::users::dsl::*;
-
-    let user = users.
-        filter(email.eq(usr_email))
-        .first::<model::User>(conn)
-        .optional()?;
-
-    Ok(user)
-}
-
 pub fn login(
     data: model::Login,
-    conn: &PgConnection,
+    user_service: &dyn users::UserServiceTrait,
 ) -> Result<model::Response<String>, diesel::result::Error> {
-    use crate::schema::users::dsl::users;
-    use crate::schema::users::dsl::id;
     let email = data.email.clone();
-    let user = find_user_by_email(email, conn);
+    let user = user_service.get_user_by_email(email.clone());
 
     match user {
         Ok(usr) => {
@@ -73,13 +56,6 @@ pub fn login(
                 let passwd = hasher.result_str();
 
                 if passwd == usr.pass{
-                    let mut tokens_vec;
-                    if let Some(tokens) = usr.tokens {
-                        tokens_vec = tokens;
-                    } else{
-                        tokens_vec = vec!();
-                    }
-
                     let now = SystemTime::now();
                     hasher = Sha256::new();
                     let dur = now.duration_since(UNIX_EPOCH)
@@ -87,20 +63,15 @@ pub fn login(
                     hasher.input(format!("{}",dur.as_secs()).as_bytes());
 
                     let result = hasher.result_str();
-                    tokens_vec.push(result.clone());
-
-                    let res = 
-                        diesel::update(users.filter(id.eq(usr.id)))
-                        .set(crate::schema::users::tokens.eq(tokens_vec))
-                        .execute(conn);
+                    let res = user_service.insert_token(email.clone(), result);
 
                     match res {
                         Ok(v) => {
-                            if v == 1{
+                            if let Some(v) = v{
                                 return Ok(
                                     model::Response{
                                         success: true,
-                                        data: Some(format!("{}", result.clone())),
+                                        data: Some(format!("{}", v)),
                                         message: format!("Successfully logged in!"),
                                         code: 200
                                     }
@@ -109,7 +80,7 @@ pub fn login(
                                 return Ok(
                                     model::Response{
                                         success: false,
-                                        data: Some(format!("{}", result.clone())),
+                                        data: None,
                                         message: format!("Error inserting token!"),
                                         code: 500
                                     }
@@ -144,53 +115,36 @@ pub fn login(
 
 pub fn logout(
     data: model::TokenInfo,
-    conn: &PgConnection,
+    user_service: &dyn users::UserServiceTrait,
 ) -> Result<model::Response<bool>, diesel::result::Error> {
-    use crate::schema::users::dsl::users;
-    use crate::schema::users::dsl::id;
+
     let email = data.email.clone();
     let token = data.token.clone();
-    let user = find_user_by_email(email, conn);
+    let user = user_service.get_user_by_email(email.clone());
     match user {
         Ok(usr) => {
-            if let Some(usr) = usr {
-                if let Some(mut tokens) = usr.tokens {
-                    if let Some(pos) = tokens.iter().position(|x| *x == token) {
-                        tokens.remove(pos);
-                    }else{
-                        return Ok(model::Response{
+            if let Some(_) = usr {
+                let res = user_service.remove_token(email.clone(), token);
+
+                match res {
+                    Ok(r) => if r {
+                        return Ok(
+                            model::Response{
+                                success: true,
+                                data: Some(true),
+                                message: format!("OK"),
+                                code: 200
+                            });
+                        }else{
+                            return Ok(model::Response{
                                     success: true,
                                     data: Some(false),
                                     message: format!("Token not found!"),
                                     code: 400
                                 }
                             );
-                    }
-
-                    let res: Result<model::User, diesel::result::Error> = 
-                        diesel::update(users.filter(id.eq(usr.id)))
-                        .set(crate::schema::users::tokens.eq(tokens))
-                        .get_result(conn);
-
-                    match res {
-                        Ok(_) => return Ok(
-                                model::Response{
-                                    success: true,
-                                    data: Some(true),
-                                    message: format!("OK"),
-                                    code: 200
-                                }
-                            ),
-                        Err(e) => return Err(e)
-                    }
-                } else{
-                    return Ok(model::Response{
-                                success: true,
-                                data: Some(false),
-                                message: format!("User has no tokens!"),
-                                code: 400
-                            }
-                        );
+                        },
+                    Err(e) => return Err(e)
                 }
             } else {
                 return Ok(model::Response{
@@ -208,11 +162,11 @@ pub fn logout(
 
 pub fn verify_token(
     data: model::TokenInfo,
-    conn: &PgConnection,
+    user_service: &dyn users::UserServiceTrait,
 ) -> Result<model::Response<bool>, diesel::result::Error> {
     let email = data.email.clone();
     let token = data.token.clone();
-    let user = find_user_by_email(email, conn);
+    let user = user_service.get_user_by_email(email);
     match user {
         Ok(usr) => {
             if let Some(usr) = usr {
@@ -262,9 +216,8 @@ pub fn verify_token(
 
 pub fn register(
     mut data: model::RegisterUser,
-    conn: &PgConnection,
+    user_service: &dyn users::UserServiceTrait,
 ) -> Result<model::Response<model::User>, diesel::result::Error> {
-    use crate::schema::users::dsl::users;
     let email = data.email.clone();
 
     let mut hasher = Sha256::new();
@@ -272,7 +225,7 @@ pub fn register(
 
     data.pass = hasher.result_str();
 
-    let found = find_user_by_email(email.clone(), conn);
+    let found = user_service.get_user_by_email(email.clone());
 
     if let Ok(Some(_)) = found{
         return Ok(
@@ -286,14 +239,12 @@ pub fn register(
     }
 
 
-    let rows_affected = diesel::insert_into(users)
-        .values(data)
-        .execute(conn);
+    let rows_affected = user_service.register_user(data);
 
     match rows_affected {
         Ok(rows) => {
             if rows == 1 {
-                let user = find_user_by_email(email, conn);
+                let user = user_service.get_user_by_email(email);
                 match user {
                     Ok(usr) => return Ok(
                         model::Response{
@@ -330,38 +281,27 @@ pub fn register(
 
 pub fn update(
     data: model::UpdateRequest,
-    conn: &PgConnection,
+    user_service: &dyn users::UserServiceTrait,
 ) -> Result<model::Response<model::User>, diesel::result::Error> {
-    use crate::schema::users::dsl::users;
-    use crate::schema::users::dsl::*;
-
     let is_logged = verify_token(model::TokenInfo{
             email: data.email.clone(),
             token: data.token.clone()
-        }, conn);
+        }, user_service);
 
     if let Ok(is_logged) = is_logged {
         if is_logged.success && is_logged.code == 200 {
 
+            let mut usr_data = data.user_data;
             let mut hasher = Sha256::new();
-            hasher.input_str(&data.user_data.pass);
+            hasher.input_str(&usr_data.pass);
             let passwd = hasher.result_str();
-
-            let rows_affected = diesel::update(users).filter(email.eq(data.email.clone()))
-                .set(
-                    (
-                        email.eq(data.user_data.email.clone()),
-                        firstname.eq(data.user_data.firstname),
-                        lastname.eq(data.user_data.lastname),
-                        pass.eq(passwd)
-                    )
-                )
-                .execute(conn);
-
+            usr_data.pass = passwd;
+            let new_mail = usr_data.email.clone();
+            let rows_affected = user_service.update_user(data.email.clone(), usr_data);
             match rows_affected {
                 Ok(v) => {
                     if v == 1 {
-                        let updated_usr = find_user_by_email(data.user_data.email.clone(), conn);
+                        let updated_usr = user_service.get_user_by_email(new_mail);
                         return Ok(
                             model::Response{
                                 success: true,
@@ -405,3 +345,50 @@ pub fn update(
     }
 
 }
+
+/*
+
+#[cfg(test)]
+pub mod tests {
+    use super::*;
+    use crate::tests::helpers::tests::get_data_pool;
+    use actix_identity::Identity;
+    use actix_web::{test, FromRequest};
+
+    async fn get_identity() -> Identity {
+        let (request, mut payload) =
+            test::TestRequest::with_header("content-type", "application/json").to_http_parts();
+        let identity = Option::<Identity>::from_request(&request, &mut payload)
+            .await
+            .unwrap()
+            .unwrap();
+        identity
+    }
+
+    async fn login_user() -> Result<Json<UserResponse>, ApiError> {
+        let params = LoginRequest {
+            email: "satoshi@nakamotoinstitute.org".into(),
+            password: "123456".into(),
+        };
+        let identity = get_identity().await;
+        login(identity, get_data_pool(), Json(params)).await
+    }
+
+    async fn logout_user() -> Result<HttpResponse, ApiError> {
+        let identity = get_identity().await;
+        logout(identity).await
+    }
+
+    #[actix_rt::test]
+    async fn it_logs_a_user_in() {
+        let response = login_user().await;
+        assert!(response.is_ok());
+    }
+
+    #[actix_rt::test]
+    async fn it_logs_a_user_out() {
+        login_user().await.unwrap();
+        let response = logout_user().await;
+        assert!(response.is_ok());
+    }
+}*/
