@@ -23,7 +23,7 @@ type GetByIDRequest struct {
 
 // GetByIDResponse holds the response values for the GetByID method.
 type GetByIDResponse struct {
-	Order order.Order `json:"order"`
+	Order order.Order `json:"order,omitempty"`
 	Err   error       `json:"error,omitempty"`
 }
 

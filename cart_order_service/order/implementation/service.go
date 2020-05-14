@@ -72,6 +72,9 @@ func (s *service) ChangeStatus(ctx context.Context, id string, status string) er
 	logger := log.With(s.logger, "method", "ChangeStatus")
 	if err := s.repository.ChangeOrderStatus(ctx, id, status); err != nil {
 		level.Error(logger).Log("err", err)
+		if err == sql.ErrNoRows {
+			return ordersvc.ErrOrderNotFound
+		}
 		return ordersvc.ErrCmdRepository
 	}
 	return nil
@@ -82,6 +85,9 @@ func (s *service) Cancel(ctx context.Context, id string) error {
 	logger := log.With(s.logger, "method", "Cancel")
 	if err := s.repository.ChangeOrderStatus(ctx, id, "Canceled"); err != nil {
 		level.Error(logger).Log("err", err)
+		if err == sql.ErrNoRows {
+			return ordersvc.ErrOrderNotFound
+		}
 		return ordersvc.ErrCmdRepository
 	}
 	return nil
