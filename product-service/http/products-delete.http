@@ -1,0 +1,1 @@
+DELETE http://{{host}}/products/{{product-id}}

@@ -1,0 +1,12 @@
+POST http://{{host}}/products/update
+Content-Type: application/json
+
+{
+  "id": "{{product-id}}",
+  "title": "Teddy bear - updated",
+  "description": "Toy for children, brand new",
+  "sellerId": "{{seller-id}}",
+  "status": "AVAILABLE",
+  "price": 150,
+  "postedDatetime": "2020-05-17T18:43:34.627Z"
+}
