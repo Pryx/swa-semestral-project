@@ -6,7 +6,7 @@ services:
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     command:
-      - "-config.file=/etc/prometheus/prometheus.yml"
+      - "--config.file=/etc/prometheus/prometheus.yml"
     expose:
       - "9090"
     networks:
@@ -24,6 +24,8 @@ services:
     ports:
       - "9512:9000"
       - "3512:3000"
+    networks:
+      - databases
 
   db:
     image: "postgres:latest"
