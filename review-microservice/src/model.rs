@@ -14,20 +14,7 @@ pub struct Review {
     pub rating: i32
 }
 
-/*
-#[derive(Serialize, Deserialize)]
-pub struct Login {
-    pub email: String,
-    pub pass: String,
-}
 
-#[derive(Serialize, Deserialize)]
-pub struct TokenInfo {
-    pub email: String,
-    pub token: String,
-}
-
-*/
 #[derive(Serialize, Deserialize)]
 pub struct Response<T> {
     pub data: Option<T>,

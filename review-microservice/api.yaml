@@ -149,7 +149,7 @@ paths:
                 data: 
                   user_id: 666
                   review_text: "Best product ever"
-                  product_id: 123
+                  product_id: "A123"
                   created: 1588789089
                   rating: 9
                 
@@ -320,8 +320,8 @@ components:
           example: "Best product ever!"
         product_id:
           description: "Product id"
-          example: 456
-          type: integer
+          example: "A456"
+          type: string
         created:
           description: "Unix timestamp of creation"
           type: integer
@@ -375,8 +375,8 @@ components:
           example: "Best product ever"
         product_id:
           description: "Id of product"
-          example: 123
-          type: integer
+          example: "A123"
+          type: string
         created:
           description: "Unix timestamp"
           example: 1588789089

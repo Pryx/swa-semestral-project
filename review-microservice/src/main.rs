@@ -73,44 +73,16 @@ async fn get_reviews_for_product(
     }
 }
 
-
-
-/* 
-#[post("/login/")]
-async fn login_user(
+#[get("/reviews/user/{user_id}")]
+async fn get_reviews_for_user(
     pool: web::Data<db::PgPool>,
-    data: web::Json<model::Login>
+    user_uid: web::Path<i32>,
 ) -> Result<HttpResponse, Error> {
-
-    let conn = pool.get().expect("couldn't get db connection from pool");
-    // use web::block to offload blocking Diesel code without blocking server thread
-    let token = web::block(move || actions::login(data.into_inner(), &conn))
-        .await;
-
-    match token {
-        Ok(r) => Ok(HttpResponseBuilder::new(StatusCode::from_u16(r.code).unwrap()).json(r)),
-        Err(_) =>{
-            let msg: model::Response<String> = model::Response{
-                success: false,
-                data: None,
-                message: format!("Internal server error!"),
-                code: 500
-            };
-
-            return Ok(HttpResponse::InternalServerError().json(msg));
-        }
-    }
-}
-
-#[post("/logout/")]
-async fn logout_user(
-    pool: web::Data<db::PgPool>,
-    data: web::Json<model::TokenInfo>
-) -> Result<HttpResponse, Error> {
+    let user_uid = user_uid.into_inner();
     let conn = pool.get().expect("couldn't get db connection from pool");
 
     // use web::block to offload blocking Diesel code without blocking server thread
-    let res = web::block(move || actions::logout(data.into_inner(), &conn))
+    let res = web::block(move || actions::find_reviews_for_user(user_uid, &conn))
         .await;
 
     match res {
@@ -127,7 +99,7 @@ async fn logout_user(
         }
     }
 }
-*/
+
 #[post("/add/")]
 async fn add_review(
     pool: web::Data<db::PgPool>,
@@ -153,34 +125,7 @@ async fn add_review(
         }
     }
 }
-/*
-#[post("/logged_in/")]
-async fn logged_in(
-    pool: web::Data<db::PgPool>,
-    data: web::Json<model::TokenInfo>
-) -> Result<HttpResponse, Error> {
-    let conn = pool.get().expect("couldn't get db connection from pool");
 
-    // use web::block to offload blocking Diesel code without blocking server thread
-    let res = web::block(move || actions::verify_token(data.into_inner(), &conn))
-        .await;
-
-    
-    match res {
-        Ok(r) => Ok(HttpResponseBuilder::new(StatusCode::from_u16(r.code).unwrap()).json(r)),
-        Err(_) =>{
-            let msg: model::Response<String> = model::Response{
-                success: false,
-                data: None,
-                message: format!("Internal server error!"),
-                code: 500
-            };
-
-            return Ok(HttpResponse::InternalServerError().json(msg));
-        }
-    }
-}
-*/
 #[post("/update/{reviewId}")]
 async fn update_review(
     pool: web::Data<db::PgPool>,
@@ -290,6 +235,7 @@ async fn main() -> io::Result<()> {
             .service(delete_review)
             .service(update_review)
             .service(get_reviews_for_product)
+            .service(get_reviews_for_user)
 
     })
     .bind(&link)?
