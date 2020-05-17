@@ -12,32 +12,34 @@ fun fakeProduct(): Product = Product(
         "testProduct",
         "Cool product",
         BigDecimal.ONE,
-        randomUuid())
+        1L)
 
 fun fakeProductDTO(): ProductDTO = ProductDTO(
         "testProduct",
         "Cool product",
         BigDecimal.ONE,
-        randomUuid())
+        1L)
 
 fun fakeReviewDTO(): ReviewDTO = ReviewDTO(
-        randomUuid(),
-        randomUuid(),
+        1L,
+        1L,
         "The product works as expected",
-        LocalDateTime.now())
+        randomUuid(),
+        LocalDateTime.now(),
+        79F)
 
 fun fakeProductWithReviewsDTO(): ProductWithReviewsDTO = ProductWithReviewsDTO(
         randomUuid(),
         "testProduct",
         "Cool product",
         BigDecimal.ONE,
-        randomUuid(),
+        1L,
         ProductStatus.AVAILABLE,
         LocalDateTime.now(),
         emptyList()
 )
 
-fun fakeProducStatusUpdateDTO(newStatus: ProductStatus): ProductStatusUpdateDTO = ProductStatusUpdateDTO(
+fun fakeProductStatusUpdateDTO(newStatus: ProductStatus): ProductStatusUpdateDTO = ProductStatusUpdateDTO(
         randomUuid(),
         newStatus
 )

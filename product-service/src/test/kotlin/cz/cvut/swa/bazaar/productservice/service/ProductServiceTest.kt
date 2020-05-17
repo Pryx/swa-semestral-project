@@ -47,7 +47,7 @@ class ProductServiceTest : BaseTest() {
                 "testProduct",
                 "Cool product",
                 BigDecimal.ONE,
-                randomUuid())
+                1L)
 
         `when`(productRepository.findById(productId)).thenReturn(Optional.of(product))
         `when`(reviewService.fetchProductReviews(productId)).thenReturn(null)
