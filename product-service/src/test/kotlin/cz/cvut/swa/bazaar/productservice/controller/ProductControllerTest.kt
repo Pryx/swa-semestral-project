@@ -45,7 +45,7 @@ class ProductControllerTest {
         `when`(productRepository.save(any(Product::class.java))).thenReturn(product)
 
         mockMvc.perform(
-                post("/product")
+                post("/products")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(productToCreate)))
                 .andExpect(status().isCreated)
@@ -58,7 +58,7 @@ class ProductControllerTest {
         `when`(productService.getProductWithReviews(productId)).thenThrow(EntityNotFoundException::class.java)
 
         mockMvc.perform(
-                get("/product/{id}", productId))
+                get("/products/{id}", productId))
                 .andExpect(status().isNotFound)
     }
 
@@ -69,7 +69,7 @@ class ProductControllerTest {
         `when`(productService.getProductWithReviews(productId)).thenThrow(NetworkException::class.java)
 
         mockMvc.perform(
-                get("/product/{id}", productId))
+                get("/products/{id}", productId))
                 .andExpect(status().isServiceUnavailable)
     }
 
@@ -81,7 +81,7 @@ class ProductControllerTest {
         `when`(productService.getProductWithReviews(productId)).thenReturn(productWithReviews)
 
         val mvcResult = mockMvc.perform(
-                get("/product/{id}", productId))
+                get("/products/{id}", productId))
                 .andExpect(status().isOk)
                 .andReturn()
 
@@ -97,7 +97,7 @@ class ProductControllerTest {
         `when`(productRepository.findById(productUpdate.id)).thenReturn(Optional.empty())
 
         mockMvc.perform(
-                post("/product/update/status")
+                post("/products/update/status")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(productUpdate)))
                 .andExpect(status().isNotFound)
@@ -115,7 +115,7 @@ class ProductControllerTest {
         `when`(productRepository.save(ArgumentMatchers.any(Product::class.java))).thenReturn(updatedProduct)
 
         val mvcResult = mockMvc.perform(
-                post("/product/update/status")
+                post("/products/update/status")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(productUpdate)))
                 .andExpect(status().isOk)

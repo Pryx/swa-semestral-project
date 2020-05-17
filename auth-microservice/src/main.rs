@@ -15,7 +15,6 @@ pub mod schema;
 pub mod actions;
 pub mod model;
 pub mod db;
-pub mod tests;
 pub mod handlers;
 pub mod users;
 

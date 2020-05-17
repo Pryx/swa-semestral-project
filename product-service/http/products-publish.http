@@ -1,0 +1,11 @@
+POST http://{{host}}/products
+Content-Type: application/json
+
+{
+  "title": "Teddy bear",
+  "description": "Teddy bear toy for children",
+  "price": 100,
+  "sellerId": "{{seller-id}}"
+}
+
+###

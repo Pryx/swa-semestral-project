@@ -1,0 +1,7 @@
+POST http://{{host}}/products/update/status
+Content-Type: application/json
+
+{
+  "id": "{{product-id}}",
+  "newStatus": "SOLD"
+}

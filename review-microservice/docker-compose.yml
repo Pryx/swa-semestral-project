@@ -6,7 +6,7 @@ services:
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     command:
-      - "-config.file=/etc/prometheus/prometheus.yml"
+      - "--config.file=/etc/prometheus/prometheus.yml"
     expose:
       - "9090"
     networks:
@@ -22,8 +22,8 @@ services:
     volumes:
       - ./grafana/provisioning/:/etc/grafana/provisioning/
     ports:
-      - "9512:9000"
-      - "3512:3000"
+      - "9888:9000"
+      - "3888:3000"
 
   db:
     image: "postgres:latest"
@@ -38,13 +38,11 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    networks:
-      - databases
 
   apidoc:
     image: "redocly/redoc:latest"
     ports:
-      - "7512:80"
+      - "7888:80"
     volumes:
       - ./api.yaml:/usr/share/nginx/html/api.yaml
     environment:
@@ -58,21 +56,21 @@ services:
   backend:
     build: .
     ports:
-      - "8512:8512"
+      - "8888:8888"
     volumes:
       - ./:/usr/src/app
     links:
       - db
       - prometheus
-    networks:
+    networks: 
       - databases
     # diesel infer_schema macro gives warnings with this flag.
     environment:
-      - AUTH_MICRO_DATABASE_URL=postgres://postgres@db:5432/postgres
-      - AUTH_MICRO_PORT=8512
-    command: bash -c "bash ./wait-for-it.sh db:5432 -q && diesel setup --database-url=$${AUTH_MICRO_DATABASE_URL} && diesel migration run --database-url=$${AUTH_MICRO_DATABASE_URL} && cargo run"
+      - REVIEW_MICRO_DATABASE_URL=postgres://postgres@db:5432/postgres
+      - REVIEW_MICRO_PORT=8888
+    command: bash -c "bash ./wait-for-it.sh db:5432 -q && diesel setup --database-url=$${REVIEW_MICRO_DATABASE_URL} && diesel migration run --database-url=$${REVIEW_MICRO_DATABASE_URL} && cargo run"
     healthcheck:
-      test: ["CMD-SHELL", "curl -sS http://0.0.0.0:8512 || exit 1"]
+      test: ["CMD-SHELL", "curl -sS http://0.0.0.0:8888 || exit 1"]
       interval: 1m30s
       timeout: 10s
       retries: 3
@@ -81,5 +79,5 @@ services:
 volumes:
   pgdata: {}
 
-networks:
+networks: 
   databases:

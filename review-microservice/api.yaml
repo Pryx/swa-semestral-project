@@ -1,0 +1,464 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Review microservice
+paths:
+  /review/{reviewId}:
+    get:
+      summary: Request info for a specific review
+      operationId: showReviewById
+      tags:
+        - Review info
+      parameters:
+        - name: reviewId
+          in: path
+          required: true
+          description: The id of the review to retrieve
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Info about requested review
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response%3CReview%3E"
+        '404':
+          description: Review not found    
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response%3CReview%3E"
+              example:
+                message: "Review not found!"
+                success: false
+                data: ""
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response%3CReview%3E"
+              example:
+                message: "Internal server error!"
+                success: false
+                data: ""
+                
+  /reviews/user/{userId}:
+    get:
+      summary: Request info for all reviews of specific user
+      operationId: showReviewsByUser
+      tags:
+        - Review info
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The id of the reviews author
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Info about requested reviews
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response%3CReviewArray%3E"
+        '404':
+          description: Review not found    
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response%3CReviewArray%3E"
+              example:
+                message: "Review not found!"
+                success: false
+                data: []
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response%3CReviewArray%3E"
+              example:
+                message: "Internal server error!"
+                success: false
+                data: []
+                
+  /reviews/product/{productId}:
+    get:
+      summary: Request info for all reviews of a specific product
+      operationId: showReviewsByProduct
+      tags:
+        - Review info
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: The id of the reviewed product to retrieve
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Info about requested reviews
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response%3CReviewArray%3E"
+        '404':
+          description: Product not found?    
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response%3CReviewArray%3E"
+              example:
+                message: "Product not found!"
+                success: false
+                data: []
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response%3CReviewArray%3E"
+              example:
+                message: "Internal server error!"
+                success: false
+                data: []
+  /add/:
+    post:
+      summary: Add new review
+      operationId: addReview
+      tags:
+        - Review modification
+      requestBody:
+       content:
+         application/json:
+            schema:
+              $ref: "#/components/schemas/AddRequest"
+      responses:
+        '200':
+          description: Review successfully added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response%3CReview%3E"
+              example:
+                success: true
+                message: "Successfully added review"
+                data: 
+                  user_id: 666
+                  review_text: "Best product ever"
+                  product_id: 123
+                  created: 1588789089
+                  rating: 9
+                
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response%3CReview%3E"
+              example:
+                message: "User already reviewed this product!"
+                success: false
+                data: ""
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response%3CReview%3E"
+              example:
+                message: "Internal server error!"
+                success: false
+                data: ""
+
+
+  /delete/{reviewId}:
+      post:
+        summary: Delete the review
+        operationId: reviewId
+        tags:
+          - Review modification
+        parameters:
+        - name: reviewId
+          in: path
+          required: true
+          description: The id of the review to delete
+          schema:
+            type: string
+        requestBody:
+         content:
+           application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteRequest"
+        responses:
+          '200':
+            description: Successfully deleted
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Response%3CString%3E"
+                example:
+                  message: "Successfully deleted!"
+                  success: true
+                  data: ""
+                
+          '400':
+            description: Invalid request
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Response%3CString%3E"
+                example:
+                  message: "Review not found!"
+                  success: false
+                  data: false
+            
+          '401':
+            description: Wrong credentials
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Response%3CString%3E"
+                example:
+                  message: "Wrong credentials!"
+                  success: false
+                  data: ""
+            
+          '500':
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Response%3CString%3E"
+                example:
+                  message: "Internal server error!"
+                  success: false
+                  data: ""
+                
+
+
+  /update/{reviewId}:
+    post:
+      summary: Update review info
+      operationId: updateReview
+      tags:
+        - Review modification
+      parameters:
+        - name: reviewId
+          in: path
+          required: true
+          description: The id of the review to update
+          schema:
+            type: string
+      requestBody:
+       content:
+         application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRequest"
+      responses:
+          '200':
+            description: Successfully updated user
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Response%3CReview%3E"
+                
+          '400':
+            description: Invalid request
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Response%3CReview%3E"
+                example:
+                  message: "Review not found!"
+                  success: false
+                  data: false
+            
+          '401':
+            description: Wrong credentials
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Response%3CReview%3E"
+                example:
+                  message: "Wrong credentials!"
+                  success: false
+                  data: ""
+            
+          '500':
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Response%3CReview%3E"
+                example:
+                  message: "Internal server error!"
+                  success: false
+                  data: ""
+
+
+                
+components:
+  schemas:
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: "Review ID"
+          example: 666
+        user_id:
+          type: integer
+          description: "User id"
+          example: 123
+        text:
+          type: string
+          description: "Review text"
+          example: "Best product ever!"
+        product_id:
+          description: "Product id"
+          example: 456
+          type: integer
+        created:
+          description: "Unix timestamp of creation"
+          type: integer
+          example: 1588789089
+        rating:
+          description: "Product rating"
+          type: integer
+          example: 9
+          
+    ReviewArray:
+      type: array
+      items: 
+        $ref: "#/components/schemas/Review"
+        
+
+          
+    DeleteRequest:
+      type: object
+      required:
+        - email
+        - token
+
+      properties:
+        review_id:
+          description: "Review id"
+          example: 666
+          type: integer
+        email:
+          description: "User´s email"
+          example: "user@email.com"
+          type: string
+        token:
+          description: "User´s auth token"
+          example: "754d96b6b1efb6b3bf9eddabd61ce480b33e6c4ca8a6db940ce03c480b90af44"
+          type: string
+          
+
+          
+    AddRequest:
+      type: object
+      required:
+        - user_id
+        - review_text
+        - product_id
+        - created
+        - rating
+      properties:
+        user_id:
+          type: integer
+          description: "User id"
+          example: 666
+        review_text:
+          type: string
+          description: "Text of review"
+          example: "Best product ever"
+        product_id:
+          description: "Id of product"
+          example: 123
+          type: integer
+        created:
+          description: "Unix timestamp"
+          example: 1588789089
+          type: integer
+        rating:
+          description: "Product rating"
+          example: 9
+          type: integer
+          
+    Response<Review>:
+      type: object
+      required:
+        - message
+        - success
+      properties:
+        message:
+          description: "Message from server"
+          type: string
+          example: "Review found!"
+        success:
+          description: "Whether request was successfull"
+          type: boolean
+          example: true
+        data:
+          $ref: "#/components/schemas/Review"
+
+    Response<ReviewArray>:
+      type: object
+      required:
+        - message
+        - success
+      properties:
+        message:
+          description: "Message from server"
+          type: string
+          example: "Reviews found!"
+        success:
+          description: "Whether request was successfull"
+          type: boolean
+          example: true
+        data:
+          $ref: "#/components/schemas/ReviewArray"
+
+    Response<String>:
+      type: object
+      required:
+        - message
+        - success
+      properties:
+        message:
+          description: "Message from server"
+          type: string
+        success:
+          description: "Whether request was successfull"
+          type: boolean
+          example: true
+        data:
+          description: "Retreived data"
+          example: "754d96b6b1efb6b3bf9eddabd61ce480b33e6c4ca8a6db940ce03c480b90af44"
+          type: string
+
+
+          
+    UpdateRequest:
+      type: object
+      required:
+        - email
+        - token
+        - user_data
+      properties:
+        email:
+          description: "Email"
+          type: string
+          example: "test@example.com"
+        token:
+          description: "Token"
+          type: string
+          example: "754d96b6b1efb6b3bf9eddabd61ce480b33e6c4ca8a6db940ce03c480b90af44"
+        user_data:
+          $ref: "#/components/schemas/AddRequest"
+

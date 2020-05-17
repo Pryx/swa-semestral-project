@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 
 data class Product(
 
-        @Id val id: String = "",
+        @Id val id: String? = null,
         val title: String,
         val description: String,
         val price: BigDecimal,

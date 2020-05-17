@@ -9,7 +9,7 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("product")
+@RequestMapping("products")
 class ProductController(
         val objectMapper: ObjectMapper,
         val productRepository: ProductRepository,
