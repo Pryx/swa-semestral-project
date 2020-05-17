@@ -1,0 +1,83 @@
+version: "3"
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    expose:
+      - "9090"
+    networks:
+      - databases
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=pass
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    volumes:
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    ports:
+      - "9888:9000"
+      - "3888:3000"
+
+  db:
+    image: "postgres:latest"
+    expose:
+      - "5432"
+    environment:
+      # - POSTGRES_PASSWORD=postgres
+      #PGDATA: /var/lib/postgresql/data/pgdata
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  apidoc:
+    image: "redocly/redoc:latest"
+    ports:
+      - "7888:80"
+    volumes:
+      - ./api.yaml:/usr/share/nginx/html/api.yaml
+    environment:
+      - SPEC_URL=api.yaml
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./:/usr/src/app
+    links:
+      - db
+      - prometheus
+    networks: 
+      - databases
+    # diesel infer_schema macro gives warnings with this flag.
+    environment:
+      - REVIEW_MICRO_DATABASE_URL=postgres://postgres@db:5432/postgres
+      - REVIEW_MICRO_PORT=8888
+    command: bash -c "bash ./wait-for-it.sh db:5432 -q && diesel setup --database-url=$${REVIEW_MICRO_DATABASE_URL} && diesel migration run --database-url=$${REVIEW_MICRO_DATABASE_URL} && cargo run"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sS http://0.0.0.0:8888 || exit 1"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+
+# cargo will try to redownload packages @ docker-compose up so store them here.
+volumes:
+  pgdata: {}
+
+networks: 
+  databases:

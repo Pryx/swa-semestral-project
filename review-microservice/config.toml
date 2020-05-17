@@ -1,0 +1,2 @@
+PORT = "8181"
+DATABASE_URL = "postgresql://reviewserv@localhost:5432/reviewserv"
