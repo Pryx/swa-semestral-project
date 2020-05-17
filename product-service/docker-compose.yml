@@ -21,15 +21,22 @@ services:
       timeout: 5s
       retries: 5
       start_period: 40s
+    networks:
+      - databases
 
   mongo:
     image: mongo:latest
     container_name: mongo
     hostname: mongo
-    ports:
-      - 27017:27017
+    expose:
+      - 27017
     volumes:
       - mongodb_data_container:/data/db
+    networks:
+      - databases
 
 volumes:
   mongodb_data_container:
+
+networks:
+  databases:

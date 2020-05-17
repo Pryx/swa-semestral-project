@@ -31,8 +31,8 @@ services:
     networks:
       - db-tier
     hostname: mongo
-    ports:
-      - 27017:27017
+    expose:
+      - 27017
 
     command: mongod --logpath=/dev/null
 
