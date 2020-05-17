@@ -18,6 +18,7 @@ services:
       SERVER_PORT: 8080
       DB_HOST: "mongodb://root:rootpassword@datastore:27017"
       DB_NAME: orders
+      PRODUCT_SERVICE_PORT: 8081
 
   datastore:
     image: mongo:latest
