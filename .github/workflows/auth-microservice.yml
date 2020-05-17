@@ -17,6 +17,12 @@ jobs:
     - name: Build
       run: cd ${GITHUB_WORKSPACE}/auth-microservice && cargo build
 
+    - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: auth-microservice
+          path: ${GITHUB_WORKSPACE}/auth-microservice/target/debug/auth-microservice
+
   test:
     runs-on: ubuntu-latest
 

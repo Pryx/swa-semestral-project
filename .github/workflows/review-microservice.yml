@@ -17,6 +17,13 @@ jobs:
     - name: Build
       run: cd ${GITHUB_WORKSPACE}/review-microservice && cargo build
 
+    - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: review-microservice
+          path: ${GITHUB_WORKSPACE}/review-microservice/target/debug/review-microservice
+
+
   test:
     runs-on: ubuntu-latest
 
