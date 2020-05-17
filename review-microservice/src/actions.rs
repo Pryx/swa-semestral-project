@@ -55,6 +55,39 @@ pub fn find_by_id(
 
     Ok(review)
 }
+
+
+pub fn find_reviews_for_product(
+    uid: String,
+    conn: &PgConnection,
+) -> Result<model::Response<Vec<model::Review>>, diesel::result::Error> {
+    use crate::schema::reviews::dsl::*;
+
+    let review = reviews.
+        filter(product_id.eq(uid))
+        .load(conn)
+        .optional()?;
+
+    match review {
+        Some(u) => return Ok(
+            model::Response{
+                success: true,
+                data: Some(u),
+                message: format!("Review found!"),
+                code: 200
+            }
+        ),
+        None => return Ok(model::Response{
+                success: false,
+                data: None,
+                message: format!("Review not found!"),
+                code: 404
+            }
+        )
+    }
+}
+
+
 /*
 pub fn login(
     data: model::Login,

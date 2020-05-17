@@ -4,7 +4,7 @@ CREATE TABLE reviews
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
     review_text text,
-    product_id INTEGER NOT NULL,
+    product_id varchar NOT NULL,
     created INTEGER NOT NULL,
     rating INTEGER NOT NULL
 );

@@ -17,7 +17,7 @@ pub mod actions;
 pub mod model;
 pub mod db;
 
-/// Finds user by UID.
+/// Finds review by UID.
 #[get("/review/{review_id}")]
 async fn get_review(
     pool: web::Data<db::PgPool>,
@@ -44,6 +44,37 @@ async fn get_review(
         }
     }
 }
+
+
+#[get("/reviews/product/{product_id}")]
+async fn get_reviews_for_product(
+    pool: web::Data<db::PgPool>,
+    product_uid: web::Path<String>,
+) -> Result<HttpResponse, Error> {
+    let product_uid = product_uid.into_inner();
+    let conn = pool.get().expect("couldn't get db connection from pool");
+
+    // use web::block to offload blocking Diesel code without blocking server thread
+    let res = web::block(move || actions::find_reviews_for_product(product_uid, &conn))
+        .await;
+
+    match res {
+        Ok(r) => Ok(HttpResponseBuilder::new(StatusCode::from_u16(r.code).unwrap()).json(r)),
+        Err(_) =>{
+            let msg: model::Response<String> = model::Response{
+                success: false,
+                data: None,
+                message: format!("Internal server error!"),
+                code: 500
+            };
+
+            return Ok(HttpResponse::InternalServerError().json(msg));
+        }
+    }
+}
+
+
+
 /* 
 #[post("/login/")]
 async fn login_user(
@@ -258,6 +289,7 @@ async fn main() -> io::Result<()> {
             .service(add_review)
             .service(delete_review)
             .service(update_review)
+            .service(get_reviews_for_product)
 
     })
     .bind(&link)?

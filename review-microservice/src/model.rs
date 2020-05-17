@@ -9,7 +9,7 @@ pub struct Review {
     pub id: i32,
     pub user_id: i32,
     pub review_text: Option<String>,
-    pub product_id: i32,
+    pub product_id: String,
     pub created: i32,
     pub rating: i32
 }
@@ -43,7 +43,7 @@ pub struct Response<T> {
 pub struct AddReview {
     pub user_id: i32,
     pub review_text: Option<String>,
-    pub product_id: i32,
+    pub product_id: String,
     pub created: i32,
     pub rating: i32
 }
@@ -61,5 +61,4 @@ pub struct UpdateRequest {
 pub struct DeleteRequest {
     pub email: String,
     pub token: String,
-    pub review_id: i32,
 }
