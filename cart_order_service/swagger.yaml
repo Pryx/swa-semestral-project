@@ -1,0 +1,198 @@
+paths:
+  /orders:
+    post:
+      consumes:
+        - application/json
+      description: Create a new order
+      operationId: createOrder
+      parameters:
+        - name: order
+          in: body
+          required: true
+          schema:
+            type: object
+            $ref: '#/definitions/Order'
+      produces:
+        - application/json
+      responses:
+        "200":
+          $ref: '#/responses/createResponse'
+        "400":
+          $ref: '#/responses/createResponse'
+        "500":
+          $ref: '#/responses/createResponse'
+      schemes:
+        - http
+        - https
+  /orders/{id}:
+    get:
+      consumes:
+        - application/json
+      description: Get one order by requested ID parameter
+      operationId: getOrderByID
+      produces:
+        - application/json
+      responses:
+        "200":
+          $ref: '#/responses/getByIDResponse'
+        "400":
+          $ref: '#/responses/getByIDResponse'
+        "500":
+          $ref: '#/responses/getByIDResponse'
+      schemes:
+        - http
+        - https
+  /orders/cancel/{id}:
+    post:
+      consumes:
+        - application/json
+      description: Set order status to CANCELLED
+      operationId: cancelOrder
+      produces:
+        - application/json
+      responses:
+        "200":
+          $ref: '#/responses/cancelResponse'
+        "400":
+          $ref: '#/responses/cancelResponse'
+        "500":
+          $ref: '#/responses/cancelResponse'
+      schemes:
+        - http
+        - https
+  /orders/customer/{id}:
+    get:
+      consumes:
+        - application/json
+      description: Get all order where the users's ID match ID parameter
+      operationId: getOrderByCustomerID
+      produces:
+        - application/json
+      responses:
+        "200":
+          $ref: '#/responses/getOrdersByCustomerIDResponse'
+        "400":
+          $ref: '#/responses/getOrdersByCustomerIDResponse'
+        "500":
+          $ref: '#/responses/getOrdersByCustomerIDResponse'
+      schemes:
+        - http
+        - https
+  /orders/status:
+    post:
+      consumes:
+        - application/json
+      description: Change order status
+      operationId: changeOrderStatus
+      parameters:
+        - name: id
+          in: body
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: body
+          required: true
+          schema:
+            type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          $ref: '#/responses/changeStatusResponse'
+        "400":
+          $ref: '#/responses/changeStatusResponse'
+        "500":
+          $ref: '#/responses/changeStatusResponse'
+      schemes:
+        - http
+        - https
+responses:
+  createResponse:
+    description: CreateResponse holds the response values for the Create method.
+    schema:
+      type: object
+      properties:
+        id:
+          type: string
+          description: An optional field with I of the created order
+        error:
+          type: string
+          description: An optional field indicating and error
+  GetByIDResponse:
+    description: GetByIDResponse holds the response values for the GetByID method.
+    schema:
+      type: object
+      properties:
+        order:
+          type: object
+          $ref: '#/definitions/Order'
+          description: An optional field with requested order
+        error:
+          type: string
+          description: An optional field indicating and error
+  GetOrdersByCustomerIDResponse:
+    description: getOrdersByCustomerIDResponse  holds the response values for the GetOrdersByCustomerID method.
+    schema:
+      type: object
+      properties:
+        order:
+          type: object
+          $ref: '#/definitions/Order'
+          format: []object
+          description: An optional field with requested order
+        error:
+          type: string
+          description: An optional field indicating and error
+  ChangeStatusResponse:
+    description: ChangeStatusResponse holds the response values for the ChangeStatus method.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          description: An optional field indicating and error
+  CancelResponse:
+    description: CancelResponse holds the response values for the CancelResponse method.
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+          description: An optional field indicating and error
+definitions:
+  Order:
+    type: object
+    title: Order represents the order made by customer
+    required:
+      - CustomerID
+      - Address
+      - Products
+    properties:
+      _id:
+        description: the id for this order
+        type: string
+        format: primitive.ObjectID
+      customer_id:
+        description: the id of the customer
+        type: string
+        format: string
+      status:
+        description: the order status
+        type: string
+        format: string
+      created_on:
+        description: the unix timestamp of the order create time
+        type: integer
+        format: int64
+      address:
+        description: the order address
+        type: string
+        format: string
+      products:
+        description: the list of products in this order
+        type: string
+        format: []string
+
+info:
+swagger: "2.0"

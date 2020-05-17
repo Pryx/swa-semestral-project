@@ -31,9 +31,7 @@ func NewService(
 	)
 	options = append(options, errorLogger, errorEncoder)
 
-	// HTTP Post - /orders
-
-	// swagger:route POST /orders createOrder
+	// swagger:route POST /orders order createOrder
 	//
 	// Create a new order
 	//
@@ -57,9 +55,7 @@ func NewService(
 		options...,
 	))
 
-	// HTTP Get - /orders/{id}
-
-	// swagger:route GET /orders/{:id} getOrderByID
+	// swagger:route GET /orders/{id} order getOrderByID
 	//
 	// Get one order by requested ID parameter
 	//
@@ -83,9 +79,7 @@ func NewService(
 		options...,
 	))
 
-	// HTTP Get - /orders/customer/{id}
-
-	// swagger:route GET /orders/customer/{:id} getOrderByCustomerID
+	// swagger:route GET /orders/customer/{id} order getOrderByCustomerID
 	//
 	// Get all order where the users's ID match ID parameter
 	//
@@ -108,8 +102,6 @@ func NewService(
 		encodeResponse,
 		options...,
 	))
-
-	// HTTP Post - /orders/status
 
 	// swagger:route POST /orders/status changeOrderStatus
 	//
@@ -135,9 +127,7 @@ func NewService(
 		options...,
 	))
 
-	// HTTP Post -  /orders/cancel/{id}
-
-	// swagger:route POST /orders/cancel/{:id} cancelOrder
+	// swagger:route POST /orders/cancel/{id} cancelOrder
 	//
 	// Set order status to CANCELLED
 	//

@@ -9,7 +9,8 @@ import (
 
 // swagger:model
 type Order struct {
-
+	// Order represents the order made by customer
+	//
 	// the id of the this order
 	//
 	// required: false
