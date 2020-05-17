@@ -92,7 +92,7 @@ class ProductControllerTest {
 
     @Test
     fun `updateProductStatus - product not found, should return error`() {
-        val productUpdate = fakeProducStatusUpdateDTO(ProductStatus.SOLD)
+        val productUpdate = fakeProductStatusUpdateDTO(ProductStatus.SOLD)
 
         `when`(productRepository.findById(productUpdate.id)).thenReturn(Optional.empty())
 
@@ -105,7 +105,7 @@ class ProductControllerTest {
 
     @Test
     fun `updateProductStatus - product found, should update status, should return product`() {
-        val productUpdate = fakeProducStatusUpdateDTO(ProductStatus.SOLD)
+        val productUpdate = fakeProductStatusUpdateDTO(ProductStatus.SOLD)
         val product = fakeProduct()
         val updatedProduct = product.apply {
             status = ProductStatus.SOLD

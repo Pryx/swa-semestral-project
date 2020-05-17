@@ -3,6 +3,7 @@ package cz.cvut.swa.bazaar.productservice.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import cz.cvut.swa.bazaar.productservice.BaseTest
 import cz.cvut.swa.bazaar.productservice.data.ReviewDTO
+import cz.cvut.swa.bazaar.productservice.data.ReviewResponseDTO
 import org.junit.AfterClass
 import org.junit.Assert
 import org.junit.BeforeClass
@@ -45,20 +46,22 @@ class ReviewServiceMockTest : BaseTest() {
         // given
         val productId = randomUuid()
         val reviewList = listOf(
-                ReviewDTO(randomUuid(), randomUuid(), "The product is absolutely perfect!", LocalDateTime.now()),
-                ReviewDTO(randomUuid(), randomUuid(), "It's a scam!!", LocalDateTime.now())
+                ReviewDTO(1L, 1L, "The product is absolutely perfect!", productId, LocalDateTime.now(), 77F),
+                ReviewDTO(2L, 2L, "It's a scam!!", productId, LocalDateTime.now(), 12F)
         )
+
+        val reviewResponse = ReviewResponseDTO(success = true, data = reviewList)
 
         mockServer.`when`(
                 request()
                         .withMethod("GET")
-                        .withPath("/reviews/$productId"))
+                        .withPath("/reviews/product/$productId"))
                 .respond(
                         response()
                                 .withStatusCode(200)
                                 .withHeaders(
                                         Header("Content-Type", "application/json; charset=utf-8"))
-                                .withBody(objectMapper.writeValueAsString(reviewList))
+                                .withBody(objectMapper.writeValueAsString(reviewResponse))
                 )
 
         // when

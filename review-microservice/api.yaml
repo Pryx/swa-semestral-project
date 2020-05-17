@@ -345,10 +345,6 @@ components:
         - token
 
       properties:
-        review_id:
-          description: "Review id"
-          example: 666
-          type: integer
         email:
           description: "User´s email"
           example: "user@email.com"

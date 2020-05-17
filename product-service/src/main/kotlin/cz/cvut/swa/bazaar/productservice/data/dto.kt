@@ -1,5 +1,6 @@
 package cz.cvut.swa.bazaar.productservice.data
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -8,7 +9,7 @@ data class ProductDTO(
         val title: String,
         val description: String,
         val price: BigDecimal,
-        val sellerId: String
+        val sellerId: Long
 
 )
 
@@ -25,7 +26,7 @@ data class ProductWithReviewsDTO (
         val title: String,
         val description: String,
         val price: BigDecimal,
-        val sellerId: String,
+        val sellerId: Long,
         var status: ProductStatus,
         val postedDatetime: LocalDateTime,
 
@@ -33,11 +34,26 @@ data class ProductWithReviewsDTO (
 
 )
 
+data class ReviewResponseDTO(
+    val message: String? = null,
+    val success: Boolean? = null,
+    val data: List<ReviewDTO> = emptyList()
+)
+
 data class ReviewDTO(
 
-        val id: String,
-        val reviewerId: String,
-        val comment: String,
-        val reviewedDatetime: LocalDateTime
+        val id: Long,
+
+        @JsonProperty("user_id")
+        val userId: Long,
+
+        @JsonProperty("review_text")
+        val reviewText: String,
+
+        @JsonProperty("product_id")
+        val productId: String,
+
+        val created: LocalDateTime,
+        val rating: Float
 
 )

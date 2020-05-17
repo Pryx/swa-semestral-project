@@ -1,6 +1,7 @@
 package cz.cvut.swa.bazaar.productservice.service
 
 import cz.cvut.swa.bazaar.productservice.data.ReviewDTO
+import cz.cvut.swa.bazaar.productservice.data.ReviewResponseDTO
 import cz.cvut.swa.bazaar.productservice.logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -17,10 +18,10 @@ class ReviewService(private val restTemplate: RestTemplate) {
     fun fetchProductReviews(id: String): List<ReviewDTO>? {
         log.debug("> fetchProductReviews - $id")
 
-        val reviewArray = restTemplate.getForObject("$url/reviews/$id", Array<ReviewDTO>::class.java)
+        val reviewArray = restTemplate.getForObject("$url/reviews/product/$id", ReviewResponseDTO::class.java)
 
         log.debug("< fetchProductReviews")
-        return reviewArray?.toList()
+        return reviewArray?.data?.toList()
     }
 
 }
