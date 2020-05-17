@@ -30,11 +30,26 @@ func NewService(
 		errorEncoder = kithttp.ServerErrorEncoder(encodeErrorResponse)
 	)
 	options = append(options, errorLogger, errorEncoder)
-	//options := []kithttp.ServerOption{
-	//	kithttp.ServerErrorLogger(logger),
-	//	kithttp.ServerErrorEncoder(encodeError),
-	//}
+
 	// HTTP Post - /orders
+
+	// swagger:route POST /orders createOrder
+	//
+	// Create a new order
+	//
+	//
+	//     Consumes:
+	//     - application/json
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http, https
+	//
+	//     Responses:
+	//       200: createResponse
+	//       400: createResponse
+	//       500: createResponse
 	r.Methods("POST").Path("/orders").Handler(kithttp.NewServer(
 		svcEndpoints.Create,
 		decodeCreateRequest,
@@ -43,6 +58,24 @@ func NewService(
 	))
 
 	// HTTP Get - /orders/{id}
+
+	// swagger:route GET /orders/{:id} getOrderByID
+	//
+	// Get one order by requested ID parameter
+	//
+	//
+	//     Consumes:
+	//     - application/json
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http, https
+	//
+	//     Responses:
+	//       200: getByIDResponse
+	//       400: getByIDResponse
+	//       500: getByIDResponse
 	r.Methods("GET").Path("/orders/{id}").Handler(kithttp.NewServer(
 		svcEndpoints.GetByID,
 		decodeGetByIDRequest,
@@ -50,7 +83,25 @@ func NewService(
 		options...,
 	))
 
-	// HTTP Get - /orders/{id}
+	// HTTP Get - /orders/customer/{id}
+
+	// swagger:route GET /orders/customer/{:id} getOrderByCustomerID
+	//
+	// Get all order where the users's ID match ID parameter
+	//
+	//
+	//     Consumes:
+	//     - application/json
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http, https
+	//
+	//     Responses:
+	//       200: getOrdersByCustomerIDResponse
+	//       400: getOrdersByCustomerIDResponse
+	//       500: getOrdersByCustomerIDResponse
 	r.Methods("GET").Path("/orders/customer/{id}").Handler(kithttp.NewServer(
 		svcEndpoints.GetOrdersByCustomerID,
 		decodeGetByIDRequest,
@@ -59,6 +110,24 @@ func NewService(
 	))
 
 	// HTTP Post - /orders/status
+
+	// swagger:route POST /orders/status changeOrderStatus
+	//
+	// Change order status
+	//
+	//
+	//     Consumes:
+	//     - application/json
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http, https
+	//
+	//     Responses:
+	//       200: changeStatusResponse
+	//       400: changeStatusResponse
+	//       500: changeStatusResponse
 	r.Methods("POST").Path("/orders/status").Handler(kithttp.NewServer(
 		svcEndpoints.ChangeStatus,
 		decodeChangeStausRequest,
@@ -66,7 +135,25 @@ func NewService(
 		options...,
 	))
 
-	// HTTP Post - /orders/status
+	// HTTP Post -  /orders/cancel/{id}
+
+	// swagger:route POST /orders/cancel/{:id} cancelOrder
+	//
+	// Set order status to CANCELLED
+	//
+	//
+	//     Consumes:
+	//     - application/json
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Schemes: http, https
+	//
+	//     Responses:
+	//       200: cancelResponse
+	//       400: cancelResponse
+	//       500: cancelResponse
 	r.Methods("POST").Path("/orders/cancel/{id}").Handler(kithttp.NewServer(
 		svcEndpoints.Cancel,
 		decodeCancelRequest,

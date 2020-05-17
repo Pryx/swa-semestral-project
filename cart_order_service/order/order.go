@@ -6,13 +6,39 @@ import (
 )
 
 // Order represents an order
+
+// swagger:model
 type Order struct {
-	ID         primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	CustomerID string             `json:"customer_id" bson:"customer_id,omitempty"`
-	Status     string             `json:"status" bson:"status,omitempty"`
-	CreatedOn  int64              `json:"created_on,omitempty" bson:"created_on,omitempty"`
-	Address    string             `json:"address" bson:"address,omitempty"`
-	Products   []string           `json:"products,omitempty" bson:"products,omitempty"`
+
+	// the id of the this order
+	//
+	// required: false
+	ID primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+
+	// the id of the customer who make this order
+	//
+	// required: true
+	CustomerID string `json:"customer_id" bson:"customer_id,omitempty"`
+
+	// the order status
+	//
+	// required: false
+	Status string `json:"status" bson:"status,omitempty"`
+
+	// the order creation date
+	//
+	// required: false
+	CreatedOn int64 `json:"created_on,omitempty" bson:"created_on,omitempty"`
+
+	// the order address
+	//
+	// required: true
+	Address string `json:"address" bson:"address,omitempty"`
+
+	// the list of product IDs
+	//
+	// required: true
+	Products []string `json:"products,omitempty" bson:"products,omitempty"`
 }
 
 // Repository describes the persistence on order model
