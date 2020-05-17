@@ -34,6 +34,6 @@ Supported variables:
 For local initial configuration run:
 `diesel setup && diesel migration run --database-url=<db_url>`
 If you need to redo the import run
-`diesel setup && diesel migration run --database-url=<db_url>`
+`diesel migration redo --database-url=<db_url>`
 
 Note that you might need to install diesel cli tools first. 

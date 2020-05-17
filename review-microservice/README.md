@@ -1,22 +1,22 @@
-# Auth microservice
+# Review microservice
 
 Everything is set up to run via docker-compose :)
 
 ## Configuration
-You can use either config.toml or environment variables. Environment variables need to have prefix `AUTH_MICRO_`.
+You can use either config.toml or environment variables. Environment variables need to have prefix `REVIEW_MICRO_`.
 
 Supported variables:
 
-* port = port where the service should listen (e.g. `8512`)
-* database_url - URL of PostgreSQL database to connect to (e.g. `postgresql://authmicro@localhost:5432/authmicro`)
+* port = port where the service should listen (e.g. `8888`)
+* database_url - URL of PostgreSQL database to connect to (e.g. `postgresql://reviewmicro@localhost:5432/reviewmicro`)
 
 ## Used ports
 
-* 6512 & 9512 - Grafana
-* 3512 - Prometheus (more efficient replacement for ElasticSearch)
-* 5512 - PostgreSQL
-* 7512 - Redoc API documentation
-* 8512 - Auth server
+* 6888 & 9888 - Grafana
+* 3888 - Prometheus (more efficient replacement for ElasticSearch)
+* 5888 - PostgreSQL
+* 7888 - Redoc API documentation
+* 8888 - Auth server
 
 ## Architecture
 
@@ -34,6 +34,6 @@ Supported variables:
 For local initial configuration run:
 `diesel setup && diesel migration run --database-url=<db_url>`
 If you need to redo the import run
-`diesel setup && diesel migration run --database-url=<db_url>`
+`diesel migration redo --database-url=<db_url>`
 
 Note that you might need to install diesel cli tools first. 
