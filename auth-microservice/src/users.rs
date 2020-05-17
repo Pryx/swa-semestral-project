@@ -12,6 +12,7 @@ pub trait UserServiceTrait {
     fn register_user(&self, user: model::RegisterUser) -> Result<usize, diesel::result::Error>; 
     fn update_user(&self, email: String, user_data: model::RegisterUser) -> Result<usize, diesel::result::Error>; 
 }
+
 pub struct UserService{
     pub pool: std::sync::Arc<db::PgPool>
 }
@@ -152,5 +153,72 @@ impl UserServiceTrait for UserService {
             .execute(&conn);
 
         return rows_affected;
+    }
+}
+
+#[cfg(test)]
+pub struct UserServiceTest{}
+
+#[cfg(test)]
+impl UserServiceTrait for UserServiceTest {
+    fn get_user_by_uid(&self, user_id: i32) -> Result<Option<model::User>, diesel::result::Error>{
+        if user_id == 1 {
+            return Ok(Some(
+                model::User{
+                    id: 1,
+                    email: format!("test@email.com"),
+                    firstname: format!("Test"),
+                    lastname: format!("Test"),
+                    pass: format!("8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"),
+                    tokens: Some(vec![format!("tok")])
+                }
+            ));
+        }
+        return Ok(None)
+    }
+    fn get_user_by_email(&self, usr_email: String) -> Result<Option<model::User>, diesel::result::Error>{
+        if usr_email == "test@email.com" {
+            return Ok(Some(
+                model::User{
+                    id: 1,
+                    email: format!("test@email.com"),
+                    firstname: format!("Test"),
+                    lastname: format!("Test"),
+                    pass: format!("8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"),
+                    tokens: Some(vec![format!("tok")])
+                }
+            ));
+        } 
+        return Ok(None);
+    }
+    fn insert_token(&self, email: String, token: String) -> Result<Option<String>, diesel::result::Error>{
+        if email == "test@email.com" {
+            return Ok(Some(
+                token
+            ));
+        }
+        return Ok(None);
+    }
+
+    fn remove_token(&self, email: String, token: String) -> Result<bool, diesel::result::Error>{
+        if email == "test@email.com" && token == "token" {
+            return Ok(true);
+        }
+        return Ok(false);
+    }
+
+    fn register_user(&self, data: model::RegisterUser) -> Result<usize, diesel::result::Error>{
+        if data.email == "test@email.com" {
+            return Ok(0);
+        }
+
+        return Ok(1);
+    }
+
+    fn update_user(&self, usr_email: String, user_data: model::RegisterUser) -> Result<usize, diesel::result::Error>{
+        if usr_email == "test@email.com" {
+            return Ok(1);
+        }
+        return Ok(0);
     }
 }

@@ -346,49 +346,135 @@ pub fn update(
 
 }
 
-/*
-
 #[cfg(test)]
-pub mod tests {
-    use super::*;
-    use crate::tests::helpers::tests::get_data_pool;
-    use actix_identity::Identity;
-    use actix_web::{test, FromRequest};
-
-    async fn get_identity() -> Identity {
-        let (request, mut payload) =
-            test::TestRequest::with_header("content-type", "application/json").to_http_parts();
-        let identity = Option::<Identity>::from_request(&request, &mut payload)
-            .await
-            .unwrap()
-            .unwrap();
-        identity
+mod tests {
+    use crate::users;
+    use crate::actions;
+    use crate::model;
+    #[test]
+    fn find_user_by_id() {
+        let u = users::UserServiceTest{};
+        
+        let res = actions::find_user_by_uid(1, &u);
+        assert!(res.is_ok());
+        let res = res.unwrap();
+        assert!(res.success);
+        assert!(res.data.is_some());
+        let data = res.data.unwrap();
+        assert!(data.email == "test@email.com");
     }
 
-    async fn login_user() -> Result<Json<UserResponse>, ApiError> {
-        let params = LoginRequest {
-            email: "satoshi@nakamotoinstitute.org".into(),
-            password: "123456".into(),
+    #[test]
+    fn login_succ() {
+        let u = users::UserServiceTest{};
+        let req = model::Login{
+            email: format!("test@email.com"),
+            pass: format!("123456")
         };
-        let identity = get_identity().await;
-        login(identity, get_data_pool(), Json(params)).await
+        let res = actions::login(req, &u);
+        assert!(res.is_ok());
+        let res = res.unwrap();
+        assert!(res.success);
+        assert!(res.data.is_some());
+        let data = res.data.unwrap();
+        assert!(data.len() > 0);
     }
 
-    async fn logout_user() -> Result<HttpResponse, ApiError> {
-        let identity = get_identity().await;
-        logout(identity).await
+    #[test]
+    fn login_fail() {
+        let u = users::UserServiceTest{};
+        let req = model::Login{
+            email: format!("test@email.com"),
+            pass: format!("1234567")
+        };
+        let res = actions::login(req, &u);
+        assert!(res.is_ok());
+        let res = res.unwrap();
+        assert!(!res.success);
+        assert!(res.data.is_none());
     }
 
-    #[actix_rt::test]
-    async fn it_logs_a_user_in() {
-        let response = login_user().await;
-        assert!(response.is_ok());
+    #[test]
+    fn register_fail() {
+        let u = users::UserServiceTest{};
+        let req = model::RegisterUser{
+            email: format!("test@email.com"),
+            pass: format!("1234567"),
+            firstname: format!("Test"),
+            lastname: format!("Test")
+        };
+        let res = actions::register(req, &u);
+        assert!(res.is_ok());
+        let res = res.unwrap();
+        assert!(!res.success);
+        assert!(res.data.is_none());
     }
 
-    #[actix_rt::test]
-    async fn it_logs_a_user_out() {
-        login_user().await.unwrap();
-        let response = logout_user().await;
-        assert!(response.is_ok());
+    #[test]
+    fn logout_fail() {
+        let u = users::UserServiceTest{};
+        let req = model::TokenInfo{
+            email: format!("test@email.com"),
+            token: format!("1234567")
+        };
+        let res = actions::logout(req, &u);
+        assert!(res.is_ok());
+        let res = res.unwrap();
+        assert!(res.success);
+        assert!(!res.data.is_none());
+        assert!(!res.data.unwrap());
     }
-}*/
+
+    #[test]
+    fn logout_not_found() {
+        let u = users::UserServiceTest{};
+        let req = model::TokenInfo{
+            email: format!("test2@email.com"),
+            token: format!("1234567")
+        };
+        let res = actions::logout(req, &u);
+        assert!(res.is_ok());
+        let res = res.unwrap();
+        assert!(!res.success);
+        assert!(res.data.is_none());
+    }
+
+    #[test]
+    fn verify_fail() {
+        let u = users::UserServiceTest{};
+        let req = model::TokenInfo{
+            email: format!("test2@email.com"),
+            token: format!("1234567")
+        };
+        let res = actions::verify_token(req, &u);
+        assert!(res.is_ok());
+        let res = res.unwrap();
+        assert!(!res.success);
+        assert!(res.data.is_none());
+    }
+
+
+    #[test]
+    fn update_fail() {
+        let u = users::UserServiceTest{};
+        let reg = model::RegisterUser{
+            firstname: format!("Test"),
+            lastname: format!("Test"),
+            email: format!("test@email.com"),
+            pass: format!("123456")
+        };
+
+        let req = model::UpdateRequest{
+            email: format!("test@email.com"),
+            token: format!("tok"),
+            user_data: reg
+        };
+
+        let res = actions::update(req, &u);
+        assert!(res.is_ok());
+        let res = res.unwrap();
+        assert!(res.success);
+        println!("{}",res.code);
+        assert!(res.data.is_some());
+    }
+}
