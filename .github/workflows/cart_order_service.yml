@@ -20,6 +20,7 @@ jobs:
       with:
         go-version: 1.14.3
 
+    - uses: actions/checkout@v2
     - name: Compile
       run: |
         cd ${{ github.workspace }}/cart_order_service/order && GO111MODULE=on go mod download && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o order ./cmd/main.go
