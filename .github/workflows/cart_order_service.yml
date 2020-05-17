@@ -22,4 +22,4 @@ jobs:
 
     - name: Compile
       run: |
-        cd ${{ github.workspace }}cart_order_service/order && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o order ./cmd/main.go
+        cd ${{ github.workspace }}/cart_order_service/order && GO111MODULE=on go mod download && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o order ./cmd/main.go
