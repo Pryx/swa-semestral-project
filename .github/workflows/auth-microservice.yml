@@ -15,7 +15,7 @@ jobs:
 
     - uses: actions/checkout@v2
     - name: Build
-      run: cd auth-microservice && cargo build --verbose
+      run: cd ${GITHUB_WORKSPACE}/auth-microservice && cargo build
 
   test:
     runs-on: ubuntu-latest
@@ -27,4 +27,4 @@ jobs:
         rustup default nightly
 
     - name: Run tests
-      run: cd auth-microservice && cargo test --verbose
+      run: cd ${GITHUB_WORKSPACE}/auth-microservice && cargo test
