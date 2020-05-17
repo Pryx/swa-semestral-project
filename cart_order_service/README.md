@@ -5,9 +5,7 @@ Order REST API FORMAT [./order/tarnsport/request_response.go](./order/transport/
  Order DAO structure description [./order/order.go](./order/order.go)
  
  Order Service interface [./order/service.go](./order/service.go)
- 
- TODO cart service
- 
+  
  
  #### How to run
  `docker-compose up --build`
@@ -16,8 +14,5 @@ Order REST API FORMAT [./order/tarnsport/request_response.go](./order/transport/
  
  
  TODOs:
- - tests
  - (???) fully implement card service 
- - API doc (swagger)
  - (???) elastic search
- - new field 'price' in Order (get data from another service - make http call for each product in order)
