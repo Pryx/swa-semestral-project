@@ -7,6 +7,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      working-directory:
+        auth-microservice
+
     steps:
     - name: Install Rust nightly
       run: |
@@ -19,6 +23,11 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+
+    env:
+      working-directory:
+        auth-microservice
+
 
     steps:
     - name: Install Rust nightly
