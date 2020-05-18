@@ -47,13 +47,12 @@ data class ReviewDTO(
         @JsonProperty("user_id")
         val userId: Long,
 
-        @JsonProperty("review_text")
-        val reviewText: String,
+        val text: String,
 
         @JsonProperty("product_id")
         val productId: String,
 
-        val created: LocalDateTime,
-        val rating: Float
+        val created: Int,
+        val rating: Int
 
 )
