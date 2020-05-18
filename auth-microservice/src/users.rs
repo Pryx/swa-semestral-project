@@ -215,7 +215,7 @@ impl UserServiceTrait for UserServiceTest {
         return Ok(1);
     }
 
-    fn update_user(&self, usr_email: String, user_data: model::RegisterUser) -> Result<usize, diesel::result::Error>{
+    fn update_user(&self, usr_email: String, _user_data: model::RegisterUser) -> Result<usize, diesel::result::Error>{
         if usr_email == "test@email.com" {
             return Ok(1);
         }
