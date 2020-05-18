@@ -25,8 +25,8 @@ fun fakeReviewDTO(): ReviewDTO = ReviewDTO(
         1L,
         "The product works as expected",
         randomUuid(),
-        LocalDateTime.now(),
-        79F)
+        timestamp(),
+        79)
 
 fun fakeProductWithReviewsDTO(): ProductWithReviewsDTO = ProductWithReviewsDTO(
         randomUuid(),
@@ -43,3 +43,5 @@ fun fakeProductStatusUpdateDTO(newStatus: ProductStatus): ProductStatusUpdateDTO
         randomUuid(),
         newStatus
 )
+
+fun timestamp(): Int = (System.currentTimeMillis() / 1000L).toInt()

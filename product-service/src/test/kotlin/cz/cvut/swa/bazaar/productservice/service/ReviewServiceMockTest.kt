@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import cz.cvut.swa.bazaar.productservice.BaseTest
 import cz.cvut.swa.bazaar.productservice.data.ReviewDTO
 import cz.cvut.swa.bazaar.productservice.data.ReviewResponseDTO
+import cz.cvut.swa.bazaar.productservice.timestamp
 import org.junit.AfterClass
 import org.junit.Assert
 import org.junit.BeforeClass
@@ -14,7 +15,6 @@ import org.mockserver.model.Header
 import org.mockserver.model.HttpRequest.request
 import org.mockserver.model.HttpResponse.response
 import org.springframework.beans.factory.annotation.Autowired
-import java.time.LocalDateTime
 import java.util.*
 
 class ReviewServiceMockTest : BaseTest() {
@@ -46,8 +46,8 @@ class ReviewServiceMockTest : BaseTest() {
         // given
         val productId = randomUuid()
         val reviewList = listOf(
-                ReviewDTO(1L, 1L, "The product is absolutely perfect!", productId, LocalDateTime.now(), 77F),
-                ReviewDTO(2L, 2L, "It's a scam!!", productId, LocalDateTime.now(), 12F)
+                ReviewDTO(1L, 1L, "The product is absolutely perfect!", productId, timestamp(), 77),
+                ReviewDTO(2L, 2L, "It's a scam!!", productId, timestamp(), 12)
         )
 
         val reviewResponse = ReviewResponseDTO(success = true, data = reviewList)
