@@ -34,6 +34,9 @@ I personally recommend to install C4 plugin for App Diagrams. [Plugin](https://g
 ### Review microservice
 ![](https://github.com/Pryx/swa-semestral-project/blob/master/architecture/diagrams_png/Review-Component-Diagram.png?raw=true)
 
+### Order microservice
+![](https://github.com/Pryx/swa-semestral-project/blob/master/architecture/diagrams_png/Order-Component-Diagram.png?raw=true)
+
 ## Level 4: Classes
 
 > omitted due to simplicity
