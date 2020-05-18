@@ -5,7 +5,6 @@ The services manage bazaar products and their reviews. All basic CRUD operations
 ## Run the service
 
 ```
-mvn clean install
 docker-compose up --build
 ```
 
