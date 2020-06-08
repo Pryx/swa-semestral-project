@@ -28,6 +28,9 @@ services:
     image: mongo:latest
     container_name: mongo
     hostname: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
     expose:
       - 27017
     volumes:
