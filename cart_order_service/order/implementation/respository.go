@@ -47,7 +47,7 @@ func (repo *repository) CreateOrder(ctx context.Context, order order.Order) (str
 		return "", errors.New("missing Product service port")
 	}
 
-	url := "localhost:" + port + "/products/update/status"
+	url := "http://localhost:" + port + "/products/update/status"
 	var wg sync.WaitGroup
 	urlChan := make(chan *Data)
 
@@ -59,6 +59,7 @@ func (repo *repository) CreateOrder(ctx context.Context, order order.Order) (str
 	for _, pid := range order.Products {
 		payload := map[string]interface{}{"id": pid, "newStatus": "SOLD"}
 		byts, _ := json.Marshal(payload)
+		wg.Add(1)
 		go makePOSTCall(&wg, urlChan, url, byts)
 	}
 
@@ -122,9 +123,9 @@ func (repo *repository) GetOrdersByCustomerID(ctx context.Context, id string) ([
 	}
 
 	for cursor.Next(ctx) {
-		var order order.Order
-		cursor.Decode(&order)
-		result = append(result, order)
+		var norder order.Order
+		cursor.Decode(&norder)
+		result = append(result, norder)
 	}
 
 	return result, err
